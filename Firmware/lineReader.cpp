@@ -1,43 +1,29 @@
-#include <Arduino.h>
-#include <EEPROM.h>
-
 #include "_config.h"
 #include "_types.h"
-
 #include "lineReader.h"
+#include "mbed.h"
 
-int values[16];
+float values[6];
 int SENSOR_MIN = 10;
 int SENSOR_MAX = 100;
 
-int MUX_INS[] = {
-  PIN_MUX_S0,
-  PIN_MUX_S1,
-  PIN_MUX_S2,
-  PIN_MUX_S3
-};
-
 void LineReader::init(){
-  pinMode(PIN_MUX_AN, INPUT);
-  pinMode(PIN_MUX_S0, OUTPUT);
-  pinMode(PIN_MUX_S1, OUTPUT);
-  pinMode(PIN_MUX_S2, OUTPUT);
-  pinMode(PIN_MUX_S3, OUTPUT);
-  pinMode(PIN_MUX_ENABLE, OUTPUT);
-  digitalWrite(PIN_MUX_ENABLE, HIGH);
-
-  // SENSOR_MIN = EEPROM.read(EEPROM_ADR_SENSOR_MIN);
-  // SENSOR_MAX = EEPROM.read(EEPROM_ADR_SENSOR_MAX);
-
+/*
+	inLR_S1(PIN_LR_S1);
+	inLR_S2(PIN_LR_S2);
+	inLR_S3(PIN_LR_S3);
+	inLR_S4(PIN_LR_S4);
+	inLR_S5(PIN_LR_S5);
+*/
 }
 
 void LineReader::readValues(){
-	for(uint8_t i = 8; i < 16; i++){
-		for(int n = 0; n < 4; n++){
-			digitalWrite(MUX_INS[n], i & (0x1 << n));
-		}
-		values[i] = analogRead(PIN_MUX_AN) / 4;
-	}
+	values[0] = inLR_S0.read();		
+	values[1] = inLR_S1.read();		
+	values[2] = inLR_S2.read();		
+	values[3] = inLR_S3.read();		
+	values[4] = inLR_S4.read();		
+	values[5] = inLR_S5.read();		
 }
 
 int LineReader::getValue(int index){
@@ -47,9 +33,9 @@ int LineReader::getValue(int index){
 float LineReader::getPosition(){
   float weighted_sum = 0;
   float sum = 0;
-  for(int i = 8; i < 16; i++){
+  for(int i = 0; i < 6; i++){
     float value = -(float)getValue(i) / (SENSOR_MAX - SENSOR_MIN) + 1.0;
-    value = fmin(fmax(0.0, value), 1.0);
+    value = min(max(0.0, value), 1.0);
     //  Serial.print(i);
     //  Serial.print(" : ");
     //  Serial.print(value);

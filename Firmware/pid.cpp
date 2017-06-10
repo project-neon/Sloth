@@ -1,40 +1,30 @@
-//That is the version v0.1 of the PID controller
-#include "pid.h"
+#include	"mbed.h" 
+#include 	"PID.h"
+ 
+#define RATE 0.1
+ 
+//Kc, Ti, Td, interval
+PID controller(1.0, 0.0, 0.0, RATE);
 
-PID::PID(float _kp, float _ki, float _kd, float _iLimit = 100){
-    this->kp = _kp;
-    this->ki = _ki;
-    this->kd = _kd;
-    this->iLimit = _iLimit;
+ 
 
-    this->integ = 0;
-    this->prevError = 0;
-}
-
-void PID::setSetPoint(float target){
-    this->desired = target;
-}
-
-float PID::update(float input, float dt){
-    float error = this->desired - input;
-
-    this->integ = this->integ + error * dt * this->ki;
-
-    if (this->integ > this->iLimit){
-        this->integ = this->iLimit;
-    }else if (this->integ < -this->iLimit){
-        this->integ = -this->iLimit;
-    }
-
-    float deriv = (error - this->prevError) / dt;
-
-    float output = this->kp * error + this->kd * deriv + this->integ;
-
-    this->prevError = error;
-
-    return output;
-}
-
-void PID::clear(){
-    prevError = integ = 0;
-}
+ 
+  //Analog input from 0.0 to 3.3V
+  controller.setInputLimits(0.0, 3.3);
+  //Pwm output from 0.0 to 1.0
+  controller.setOutputLimits(0.0, 1.0);
+  //If there's a bias.
+  controller.setBias(0.3);
+  controller.setMode(AUTO);
+  //We want the process variable to be 1.7V
+  controller.setSetPoint(1.7);
+ 
+  
+    //Update the process variable.
+    controller.setProcessValue(pv.read());
+    //Set the new output.
+    co = controller.getRealOutput();
+    //Wait for another loop calculation.
+    wait(RATE);
+  
+ 

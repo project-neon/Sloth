@@ -1,0 +1,115 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.23.0.0
+Copyright (C) 2017 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Gustavo S. de Paula, NEON, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.23
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 4 (build 422)
+Assembler:       Armasm.exe V5.06 update 4 (build 422)
+Linker/Locator:  ArmLink.exe V5.06 update 4 (build 422)
+Library Manager: ArmAr.exe V5.06 update 4 (build 422)
+Hex Converter:   FromElf.exe V5.06 update 4 (build 422)
+CPU DLL:         
+Dialog DLL:      DCM.DLL V1.15.0.0
+Target DLL:      CMSIS_AGDI.dll V1.27.5.0
+Dialog DLL:      TCM.DLL V1.27.0.0
+ 
+<h2>Project:</h2>
+C:\Users\Gustavo S. de Paula\Documents\Dados\Projetos\Neon\NeoFollowerFirmware\NeoFollowerFirmware.uvprojx
+Project File Date:  05/07/2017
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 4 (build 422)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'NeoFollowerFirmware'
+compiling motors.cpp...
+mbed/./drivers/LocalFileSystem.h(99): warning:  #1361-D: function "mbed::FileSystemLike::FileSystemLike(const char *)"  (declared at line 47 of "mbed/./drivers/FileSystemLike.h") was declared "deprecated"
+      LocalFileSystem(const char* n) : FileSystemLike(n) {
+motors.cpp(50): error:  #245: a nonstatic member reference must be relative to a specific object
+      pwmM1->write(0);
+motors.cpp(51): error:  #245: a nonstatic member reference must be relative to a specific object
+      in1M1->write(0);
+motors.cpp(52): error:  #245: a nonstatic member reference must be relative to a specific object
+      in2M1->write(0);
+motors.cpp(55): error:  #245: a nonstatic member reference must be relative to a specific object
+      pwmM2->write(0);
+motors.cpp(56): error:  #245: a nonstatic member reference must be relative to a specific object
+      in1M2->write(0);
+motors.cpp(57): error:  #245: a nonstatic member reference must be relative to a specific object
+      in2M2->write(0);
+motors.cpp: 1 warning, 6 errors
+compiling pid.cpp...
+mbed/./drivers/LocalFileSystem.h(99): warning:  #1361-D: function "mbed::FileSystemLike::FileSystemLike(const char *)"  (declared at line 47 of "mbed/./drivers/FileSystemLike.h") was declared "deprecated"
+      LocalFileSystem(const char* n) : FileSystemLike(n) {
+pid.cpp(13): error:  #77-D: this declaration has no storage class or type specifier
+    controller.setInputLimits(0.0, 3.3);
+pid.cpp(13): error:  #247: variable "controller"  has already been defined
+    controller.setInputLimits(0.0, 3.3);
+pid.cpp(13): error:  #65: expected a ";"
+    controller.setInputLimits(0.0, 3.3);
+pid.cpp(15): error:  #77-D: this declaration has no storage class or type specifier
+    controller.setOutputLimits(0.0, 1.0);
+pid.cpp(15): error:  #247: variable "controller"  has already been defined
+    controller.setOutputLimits(0.0, 1.0);
+pid.cpp(15): error:  #65: expected a ";"
+    controller.setOutputLimits(0.0, 1.0);
+pid.cpp(17): error:  #77-D: this declaration has no storage class or type specifier
+    controller.setBias(0.3);
+pid.cpp(17): error:  #247: variable "controller"  has already been defined
+    controller.setBias(0.3);
+pid.cpp(17): error:  #65: expected a ";"
+    controller.setBias(0.3);
+pid.cpp(18): error:  #77-D: this declaration has no storage class or type specifier
+    controller.setMode(AUTO);
+pid.cpp(18): error:  #247: variable "controller"  has already been defined
+    controller.setMode(AUTO);
+pid.cpp(18): error:  #65: expected a ";"
+    controller.setMode(AUTO);
+pid.cpp(20): error:  #77-D: this declaration has no storage class or type specifier
+    controller.setSetPoint(1.7);
+pid.cpp(20): error:  #247: variable "controller"  has already been defined
+    controller.setSetPoint(1.7);
+pid.cpp(20): error:  #65: expected a ";"
+    controller.setSetPoint(1.7);
+pid.cpp(24): error:  #77-D: this declaration has no storage class or type specifier
+      controller.setProcessValue(pv.read());
+pid.cpp(24): error:  #247: variable "controller"  has already been defined
+      controller.setProcessValue(pv.read());
+pid.cpp(24): error:  #65: expected a ";"
+      controller.setProcessValue(pv.read());
+pid.cpp(26): error:  #77-D: this declaration has no storage class or type specifier
+      co = controller.getRealOutput();
+pid.cpp(26): error:  #135: class "PID"  has no member "getRealOutput"
+      co = controller.getRealOutput();
+pid.cpp(28): error:  #77-D: this declaration has no storage class or type specifier
+      wait(
+ATE);
+pid.cpp(28): error:  #147: declaration is incompatible with "void wait(float)"  (declared at line 51 of "mbed/./platform/mbed_wait_api.h")
+      wait(
+ATE);
+pid.cpp: 1 warning, 22 errors
+compiling lineReader.cpp...
+mbed/./drivers/LocalFileSystem.h(99): warning:  #1361-D: function "mbed::FileSystemLike::FileSystemLike(const char *)"  (declared at line 47 of "mbed/./drivers/FileSystemLike.h") was declared "deprecated"
+      LocalFileSystem(const char* n) : FileSystemLike(n) {
+lineReader.cpp(47): error:  #20: identifier "fmax" is undefined
+      value = fmin(fmax(0.0, value), 1.0);
+lineReader.cpp(47): error:  #20: identifier "fmin" is undefined
+      value = fmin(fmax(0.0, value), 1.0);
+lineReader.cpp: 1 warning, 2 errors
+".\BUILD\NeoFollowerFirmware.axf" - 30 Error(s), 3 Warning(s).
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_NeoFollowerFirmware
+  C:\Keil_v5\ARM\PACK\Keil\LPC1700_DFP\2.3.0\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+Target not created.
+Build Time Elapsed:  00:00:02
+</pre>
+</body>
+</html>

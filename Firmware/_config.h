@@ -1,15 +1,12 @@
-#include <stdint.h>
-#include <math.h>
-
 #ifndef CONFIG_H
 #define CONFIG_H
-
+#include "mbed.h"
 
 //
 // Project
 //
-#define PROJECT_NAME            F("Neon FollowerFirmware")
-#define PROJECT_VERSION         F("v0.1")
+#define PROJECT_NAME            F("Neo Follower Firmware")
+#define PROJECT_VERSION         F("v0.4")
 
 
 //
@@ -22,19 +19,9 @@
 //
 // Serial DEBUG
 //
-#define SERIAL_SPEED 						115200
-#define LOG 								    Serial.print
+#define SERIAL_SPEED            115200
+#define LOG                     Serial.print
 
-
-//
-// Mux Settings
-//
-#define PIN_MUX_ENABLE          16
-#define PIN_MUX_AN              A5
-#define PIN_MUX_S0              6
-#define PIN_MUX_S1              A1
-#define PIN_MUX_S2              7
-#define PIN_MUX_S3              4
 
 //
 // Stick Settings
@@ -47,31 +34,33 @@
 #define STICK_CENTER            52
 
 //
-// EEPROM Adresses
+// Line Reader Settings
 //
-#define EEPROM_ADR_SENSOR_MIN   0x01
-#define EEPROM_ADR_SENSOR_MAX   0x02
-#define EEPROM_STEER_PHASE      0x03
-#define EEPROM_STEER_CONVERGE   0x04
+
+#define PIN_LR_S0								p15
+#define PIN_LR_S1   	          p16
+#define PIN_LR_S2 	            p17
+#define PIN_LR_S3     	        p18
+#define PIN_LR_S4								p19
+#define PIN_LR_S5								p20
+#define PIN_TRACK_MARKING_RIGHT	p13							
+#define PIN_TRACK_MARKING_LEFT	p14
 
 
-//
-// I2C Config (IMU/Display
-//
-#define DISPLAY_ADDRESS         0x3C
-#define IMU_INTERRUPT_CHANNEL   0
 
 //
 // Motors config (H-Bridge)
 //
+#define PWM_PERIOD              1/90000 //Maximo 100KHz
 #define MOTOR_ABS_MAX           255
-#define PIN_M1_EN               11
-#define PIN_M1_IN1              MOSI
-#define PIN_M1_IN2              SCK
+#define PIN_M1_EN               p26
+#define PIN_M1_IN1              p5
+#define PIN_M1_IN2              p6
 
-#define PIN_M2_EN               5
-#define PIN_M2_IN1              8
-#define PIN_M2_IN2              MISO
+#define PIN_M2_EN               p27
+#define PIN_M2_IN1              p7
+#define PIN_M2_IN2              p8
+
 
 //
 //Lap Sensor Settings
@@ -79,17 +68,12 @@
 #define INTERRUPT_PIN           0
 #define CROSS_COUNTER           6
 
-//
-// Servos for Ackerman
-//
-#define PIN_ACKERMAN_LEFT        13
-#define PIN_ACKERMAN_RIGHT       9
 
 //
 // VBat Reader (battery status)
 //
-#define VBAT_ALARMED           7.10
-#define VBAT_WARNED            7.40
+#define VBAT_ALARMED            7.10
+#define VBAT_WARNED             7.40
 
 #define PIN_VBAT                A4
 #define VBAT_VOLTAGE(adc)       (adc - 534) * (8.23 - 6.47) / (662-534) + 6.47
@@ -100,6 +84,7 @@
 // Bluetooth Configs (Type here)
 //
 #define Bluetooth               Serial
+
 
 
 #endif
