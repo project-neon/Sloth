@@ -12,12 +12,12 @@
 // Average of both motors
     PwmOut pwmM1(PIN_M1_EN);
     PwmOut pwmM2(PIN_M2_EN);
-    
+
     DigitalOut in1M1(PIN_M1_IN1);
     DigitalOut in2M1(PIN_M1_IN2);
     DigitalOut in1M2(PIN_M2_IN1);
     DigitalOut in2M2(PIN_M2_IN2);
-		
+
 class Motors{
 public:
 
