@@ -2,13 +2,13 @@
 #include "_config.h"
 
 // Average of both motors
-//   PwmOut pwmM1(PIN_M1_EN);
-//   PwmOut pwmM2(PIN_M2_EN);
-//
-//   DigitalOut in1M1(PIN_M1_IN1);
-//   DigitalOut in2M1(PIN_M1_IN2);
-//   DigitalOut in1M2(PIN_M2_IN1);
-//   DigitalOut in2M2(PIN_M2_IN2);
+  PwmOut pwmM1(PIN_M1_EN);
+  PwmOut pwmM2(PIN_M2_EN);
+
+  DigitalOut in1M1(PIN_M1_IN1);
+  DigitalOut in2M1(PIN_M1_IN2);
+  DigitalOut in1M2(PIN_M2_IN1);
+  DigitalOut in2M2(PIN_M2_IN2);
 
 // Line Reader
     AnalogIn inSensors[6] = {
@@ -20,15 +20,15 @@
         PIN_LR_S5
     };
 
-//  AnalogIn inLR_S0(PIN_LR_S0);
-//  AnalogIn inLR_S1(PIN_LR_S1);
-//  AnalogIn inLR_S2(PIN_LR_S2);
-//  AnalogIn inLR_S3(PIN_LR_S3);
-//  AnalogIn inLR_S4(PIN_LR_S4);
-//  AnalogIn inLR_S5(PIN_LR_S5);
+ AnalogIn inLR_S0(PIN_LR_S0);
+ AnalogIn inLR_S1(PIN_LR_S1);
+ AnalogIn inLR_S2(PIN_LR_S2);
+ AnalogIn inLR_S3(PIN_LR_S3);
+ AnalogIn inLR_S4(PIN_LR_S4);
+ AnalogIn inLR_S5(PIN_LR_S5);
 
-//    DigitalIn inMarkingL(PIN_LR_S0);
-//    DigitalIn inMarkingR(PIN_LR_S0);
+   DigitalIn inMarkingL(PIN_LR_S0);
+   DigitalIn inMarkingR(PIN_LR_S0);
 
 //Serial
 
@@ -69,12 +69,12 @@ void readValues(int nSensors){
         for (int i = 0; i < nSensors; i++)
                 values[i] = inSensors[i].read();
 
-//  values[0] = inLR_S0.read();
-//  values[1] = inLR_S1.read();
-//  values[2] = inLR_S2.read();
-//  values[3] = inLR_S3.read();
-//  values[4] = inLR_S4.read();
-//  values[5] = inLR_S5.read();
+ values[0] = inLR_S0.read();
+ values[1] = inLR_S1.read();
+ values[2] = inLR_S2.read();
+ values[3] = inLR_S3.read();
+ values[4] = inLR_S4.read();
+ values[5] = inLR_S5.read();
 }
 
 float getValue(int index){
@@ -93,15 +93,15 @@ float getPosition(){
   float position = ((weighted_sum / sum));
   return position;
 }
-/*
+
 ///////////////MOTORS////////////////////////
 
 //// Set power of both DC motors
 void Motors_setPower(float m1, float m2){
 
     // Limit Powers
-    //m1 = min(max(m1, -100.0), 100.0);
-    //m2 = min(max(m2, -100.0), 100.0);
+    m1 = min(max(m1, -100.0), 100.0);
+    m2 = min(max(m2, -100.0), 100.0);
 
     // Map powers
     float powerOutA = m1 / 100.0;
@@ -137,7 +137,7 @@ void Motors_init(){
     pwmM2.period(PWM_PERIOD);
     Motors_setPower(0, 0);
 }
-*/
+
 void PID(float _kp, float _ki, float _kd, float _iLimit = 100){
     kp = _kp;
     ki = _ki;
@@ -176,7 +176,7 @@ float PID_update(float input, float dt){
 //}
 
 
-int main() {
+void main() {
 
         //Motors_init();
        // PID(K_PROPORTINAL,K_INTEGRAL,K_DERIVATIVE,K_LIMIT);
