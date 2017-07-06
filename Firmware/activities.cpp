@@ -24,30 +24,26 @@ lapRight.rise(&lapSensorActivated);
 // ACTIVITY: Test Motors
 // ====================================
 void activityActuators_run(){
-  if(Runner::invalidated){
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(BLACK, WHITE);
-    display.setCursor(15, 5);
-    display.print("Test Actuators");
+  if(Runner::stoped){
+    BT::Send("Test Actuators");
   }
 
-  if(Bluetooth::read() == "STOP"){
+  if(BT::read() == "S"){
     Motors::setPower(0, 0);
     return;
   }
 
-  int btState = Interface::read();
+  int btState = BT::read();
 
   if(btState == "IDDLE"){
     Motors::setPower(0, 0);
-    Bluetooth::Send(" ( ) ");
+    BT::Send(" ( ) ");
   }else if(btState == "BACK"){
     Motors::setPower(-100, -100);
-    Bluetooth::Send("V");
+    BT::Send("V");
   }else if(btState == "UP"){
     Motors::setPower(100, 100);
-    Bluetooth::Send("^");
+    BT::Send("^");
   }
 }
 
@@ -66,112 +62,85 @@ void activityLineFollower_run(){
   static double realError;
   static float lastError;
 
-  if(Runner::invalidated){
+  if(Runner::stoped){
     lastSide = 0;
 //     start = millis();
-//     started = false;
-//     integral = 0;
-//     realError = 0;
-//     lastError = 0;
-//
-//     display.clearDisplay();
-//     display.setTextSize(1);
-//     display.setTextColor(BLACK, WHITE);
-//     display.setCursor(20, 5);
-//     display.print("Line Follow");
-//     display.display();
-//     Runner::invalidated = false;
-//
-//     Robot::doBeep(3, TIME_INTERVAL);
-//   };
-//   int btn = Interface::readBtnState();
-//   if(!started){
-//     display.setTextSize(3);
-//     display.setTextColor(WHITE, BLACK);
-//     display.setCursor(45, 30);
-//     if(btn == STICK_CENTER){
-//       display.print("GO!");
-//
-//       // Set started flag
-//       started = true;
-//       startedTime = millis();
-//     }else{
-//       if(btn == STICK_DOWN)
-//         SECCONDS--;
-//       else if(btn == STICK_UP)
-//         SECCONDS++;
-//
-//       display.print(SECCONDS);
-//     }
-//     display.display();
-//     return;
-//   }
-//
-//
-//   //Lap Sensor Interrupt
-//
-//   float g[3];
-//   float derivative;
-//   float curve;
-//   float speedDown;
-//   float m1;
-//   float m2;
-//   int dt = 0;
-//   lastStart = micros();
-//   //unsigned long start;
-//   while(true){
-//     start = micros();
-//     dt = start - lastStart;
-//     lastStart = start;
-//
-//     if(Interface::readBtnState() == STICK_LEFT){
-//       Motors::setPower(0, 0);
-//       Motors::setSteering(0, true);
-//       Runner::exit();
-//       detachInterrupt(digitalPinToInterrupt(1));
-//       return;
-//     }
-//
-//     //
-//     // Follow Line controll
-//     //
-//     #define MINIMUM_SPEED         15
-//     #define BASE_SPEED            40
-//     #define CURVE_DIFERENTIAL     100
-//     #define ERROR_APPROACH        0.4
-//
-//     #define K_INTEGRAL            0.0000000
-//     #define K_DERIVATIVE          0.3875
-//     #define K_PROPORTINAL         80.0  //ADD BY VITOR
-//
-//     // Definições para Steering
-//     #define STEERING_NORMAL_MULT  12
-//     #define STEERING_CURVE_MULT   60
-//     #define STEERING_CURVE_START  0.45
-//     #define SPEEDOWN_MULT         0.9
-//
-//     if(millis() - startedTime > SECCONDS * 1000){//lineDetected){
-//       // cross_counter % 2 == 0 ? (PORTE |=  (1<<2)) : (PORTE &= ~(1<<2));
-//       lineDetected = false;
-//       cross_counter--;
-//       // if(cross_counter <= 0){
-//         Motors::setPower(0, 0);
-//         Motors::setSteering(0, true);
-//         Runner::exit();
-//         detachInterrupt(digitalPinToInterrupt(1));
-//         return;
-//       // }
-//     }
-//
-//     //g[0] = K_PROPORTINAL + K_INTEGRAL/2 + K_DERIVATIVE;
-//     //g[1] = -K_PROPORTINAL + K_INTEGRAL/2 - 2*K_DERIVATIVE;
-//     //g[2] = K_DERIVATIVE;
-//
-//     //error2 = error1;
-//     //error1 = error;
-//
-//     LineReader::readValues();
-//     error = LineReader::getPosition();
+    started = false;
+    integral = 0;
+    realError = 0;
+    lastError = 0;
+    BT::Send("Line Follow");
+    Runner::stoped = false;
+  };
+  int btn = BT::read();
+  if(!started){
+    if(btn == "GO"){
+      BT::Send("GO!");
+      // Set started flag
+      started = true;
+      //startedTime = millis();
+    }else{
+      if(btn == "--")
+        SECCONDS--;
+      else if(btn == "++")
+        SECCONDS++;
+
+      BT::Send(SECCONDS);
+    }
+    return;
+  }
+
+
+  //Lap Sensor Interrupt
+  float derivative;
+  float curve;
+  float speedDown;
+  float m1;
+  float m2;
+  int dt = 0;
+  //lastStart = micros();
+  while(true){
+    //start = micros();
+    // dt = start - lastStart;
+    // lastStart = start;
+
+    // if(Interface::readBtnState() == STICK_LEFT){
+    //   Motors::setPower(0, 0);
+    //   Motors::setSteering(0, true);
+    //   Runner::exit();
+    //   detachInterrupt(digitalPinToInterrupt(1));
+    //   return;
+    // }
+
+    //
+    // Follow Line controll
+    //
+    #define MINIMUM_SPEED         15
+    #define BASE_SPEED            40
+    #define CURVE_DIFERENTIAL     100
+    #define ERROR_APPROACH        0.4
+
+    #define K_INTEGRAL            0.0000000
+    #define K_DERIVATIVE          0.3875
+    #define K_PROPORTINAL         80.0
+
+
+    // if(millis() - startedTime > SECCONDS * 1000){//lineDetected){
+    //   // cross_counter % 2 == 0 ? (PORTE |=  (1<<2)) : (PORTE &= ~(1<<2));
+    //   lineDetected = false;
+    //   cross_counter--;
+    //   // if(cross_counter <= 0){
+    //     Motors::setPower(0, 0);
+    //     Motors::setSteering(0, true);
+    //     Runner::exit();
+    //     //detachInterrupt(digitalPinToInterrupt(1));
+    //     return;
+    //   // }
+    // }
+
+    LineReader::readValues();
+    error = LineReader::getPosition();
+
 //     if(isnan(error)){
 //       error = lastSide * 2;
 //     }else{
@@ -215,10 +184,5 @@ void activityLineFollower_run(){
 //       m2 * speedDown
 //     );
 //
-//     Motors::setSteering(error * STEERING_NORMAL_MULT + curve * STEERING_CURVE_MULT);
-//     //mv[1] = mv[0];
-//     //mv[0] = mv[1] + error*g[0] + error1*g[1] + error2*g[2];
-//     //Motors::setSteering(mv[0]);
-//     //Serial.println(dt);
 //   }
 // }

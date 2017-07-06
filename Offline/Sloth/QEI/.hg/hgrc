@@ -1,0 +1,4 @@
+[ui]
+ignore.local = .hg/hgignore
+[paths]
+default = https://mbed.org/users/aberk/code/QEI/

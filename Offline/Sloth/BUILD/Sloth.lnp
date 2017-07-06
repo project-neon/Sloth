@@ -1,0 +1,18 @@
+--cpu Cortex-M3
+"mbed/LPC1768/capi.ar"
+"mbed/LPC1768/cmsis_nvic.o"
+"mbed/LPC1768/core_cm3.o"
+"mbed/LPC1768/mbed.ar"
+"mbed/LPC1768/stackheap.o"
+"mbed/LPC1768/startup_LPC17xx.o"
+"mbed/LPC1768/system_LPC17xx.o"
+".\build\motor.o"
+".\build\pid.o"
+".\build\pid2.o"
+".\build\qtrsensors.o"
+".\build\qei.o"
+".\build\main.o"
+--scatter "mbed/LPC1768/LPC1768.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\BUILD\Sloth.map" -o .\BUILD\Sloth.axf
