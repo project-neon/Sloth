@@ -7,7 +7,7 @@
 #ifndef BT_H
 #define BT_H
 
-Serial bluetooth(PIN_TX, PIN_RX);          // TX, RX
+MODSERIAL bluetooth(PIN_TX, PIN_RX);          // TX, RX
 
 class BT{
 public:
@@ -20,7 +20,13 @@ public:
 
     static bool checkIsWriteable();
 
-    static void send();
+    static void txCallback(MODSERIAL_IRQ_INFO *q);
+
+    static void rxCallback(MODSERIAL_IRQ_INFO *q);
+
+    static void txEmpty(MODSERIAL_IRQ_INFO *q);
+    
+    static int main();
 };
 
 #endif
