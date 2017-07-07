@@ -1,11 +1,14 @@
 #include "Motor.h"
 #include "QTRSensors.h"
 #include "PID.h"
-//#include "QEI.h"
+#include "QEI.h"
 #include "_config.h"
 
 // Timers
 Timer tbt;
+Timer tlap;
+Timer tstop;
+Timer tsafeline;
 
 // Serial
 Serial PC(USBTX, USBRX);
@@ -18,8 +21,6 @@ DigitalOut leds[4] = {
     LED3,
     LED4,
 };
-bool ms1state;
-bool ms2state;
 
 // Motors
 Motor m1(PIN_M1_EN, PIN_M1_IN1, PIN_M1_IN2); // Left Motor
@@ -28,8 +29,8 @@ float m1speed = 0.0;
 float m2speed = 0.0;
 
 // Encoders
-//QEI enc1 (PIN_ENC1_A, PIN_ENC1_B, NC, PULSES_PER_REV); // Left Encoder
-//QEI enc2 (PIN_ENC2_A, PIN_ENC2_B, NC, PULSES_PER_REV); // Right Encoder
+QEI enc1 (PIN_ENC1_A, PIN_ENC1_B, NC, PULSES_PER_REV); // Left Encoder
+QEI enc2 (PIN_ENC2_A, PIN_ENC2_B, NC, PULSES_PER_REV); // Right Encoder
 
 // Line Reader
 PinName pinslinereader[NUM_SENSORS] = {
@@ -47,8 +48,9 @@ int position;
 
 // Lap sensor settings
 InterruptIn marksensor1(PIN_TRACK_MARKING_RIGHT);
-//InterruptIn marksensor2(PIN_TRACK_MARKING_LEFT);
 
+bool ms1state = false;
+bool ms2state = false;
 int ms1count = 0;
 int ms2count = 0;
 bool robotstate = true;
@@ -60,10 +62,22 @@ bool robotstate = true;
 // float kidir = 0.00000;
 // float kddir = 0.0000045;
 
-float speedbase = .52;
-float kpdir = 0.00035;
+//Nota 9 TOTAL ESTAVEL COM O PEZINHO 8.25V 26 segundos
+// speed = .53
+// kp 0.0004
+// kd 0.0000045
+
+// 21 segundos Meio Estavel, apenas nas curvas (7) 8.14V
+// float speedbase = .62;
+// float kpdir = 0.00051;
+// float kidir = 0.00000;
+// float kddir = 0.0000045;
+
+
+float speedbase = .64;
+float kpdir = 0.00053;
 float kidir = 0.00000;
-float kddir = 0.0000040;
+float kddir = 0.000005;
 float setpointdir = 0.0;
 float directiongain = 0.0;
 PID directioncontrol(0, 0, 0);
@@ -120,27 +134,32 @@ void btcallback() {
             speedbase -= 0.01;
             break;
         case 'I':
-            robotstate = ! robotstate;
+            robotstate = false;
             break;
     }
     directioncontrol.setTunings(kpdir, kidir, kddir);
+    BT.printf("%.8f %.8f %.2f\n", kpdir, kddir, speedbase);
 }
 
 void ms1() {
-    ms1state = !ms1state;
-    ms1count++;
-    if (ms1count >= CROSS_COUNTER)
-        //robotstate = false;
-        robotstate = robotstate;
-    LOG.printf("Sensor Rigth Pulse: %4i \t", ms1count);
+    if (tsafeline > .1) {
+      tsafeline.reset();
+      ms1state = !ms1state;
+      ms1count++;
+      leds[1] = true;
+      if (ms1count >= CROSS_COUNTER) {
+          // robotstate = false;
+          tstop.start();
+      }
+    }
 }
 
-void ms2() {
-    ms2state = !ms1state;
-    ms2count++;
-    if (ms2count >= CROSS_COUNTER)
-        robotstate = false;
-}
+// void ms2() {
+//     ms2state = !ms1state;
+//     ms2count++;
+//     if (ms2count >= CROSS_COUNTER)
+//         robotstate = false;
+// }
 
 int main() {
 
@@ -155,9 +174,7 @@ int main() {
     directioncontrol.setTunings(kpdir, kidir, kddir);
     directioncontrol.setSetPoint(setpointdir);
 
-     //marksensor1.rise(&ms1); //Sensor Right
-     marksensor1.fall(&ms1); //Sensor Right
-    // marksensor2.rise(&ms2); // Sensor Left
+    marksensor1.fall(&ms1); //Sensor Right
 
     LOG.printf("%s", "Setup...");
     LOG.printf("%s\n", "Done.");
@@ -166,31 +183,47 @@ int main() {
     m1.coast();
     m2.coast();
 
+    // Calibrate the line sensor
     wait(1);
     lineReaderCalibrate();
     LOG.printf("%s\n", "Sensores Calibrado");
     wait(2);
 
 //    Reset Encoders
-//    enc1.reset();
-//    enc2.reset();
+   enc1.reset();
+   enc2.reset();
 
     ms1count = 0;
     ms2count = 0;
 
 //    Start Timers
     tbt.start();
+    tsafeline.start();
+    tlap.start();
 
 //    Main Loop
     while(1) {
 
+        unsigned int pulses = (enc1.getPulses() + enc2.getPulses()) / 2;
+        if (pulses >= NUMBER_PULSES)
+          robotstate = false;
+          //robotstate = robotstate;
+
         if (!robotstate) {
             m1.brake();
             m2.brake();
+            BT.printf("Time Lap: %.5f\n", tlap.read());
+            BT.printf("Pulses: %i %i\n", enc1.getPulses(), enc2.getPulses());
+            wait(.250);
+            m1.coast();
+            m2.coast();
+
             for (int i = 0; i <= 3; i++) {
-                for (int j = 0; j <= 3; leds[j++] = j == i);
-                wait(.250);
+            for (int j = 0; j <= 3; j++)
+              leds[j] = j == i;
+              wait(.250);
             }
+
         } else {
 
             // Position of the line: (left)-2500 to 2500(right)
@@ -203,7 +236,17 @@ int main() {
             m1.speed(m1speed);
             m2.speed(m2speed);
 
-            if (tbt.read() > .5) {
+            if(tsafeline.read() > .2){
+              leds[1] = 0;
+            }
+
+
+            if (tstop.read() > .5) {
+              tstop.stop();
+              //robotstate = false;
+            }
+
+            if (tbt.read() > .001) {
 
 //                LOG.printf("%i ", position);
 //                LOG.printf("%.3f ", directiongain);
@@ -213,10 +256,10 @@ int main() {
 //                LOG.printf("%.0i\n", ms2count);
 
                 //LOG.printf("%.10f %.10f %.10f %.2f", kpdir, kidir, kddir, speedbase);
-                BT.printf("%.10f %.10f %.10f %.2f", kpdir, kidir, kddir, speedbase);
-
+                //BT.printf("%.10f %.10f %.10f %.2f", kpdir, kidir, kddir, speedbase);
+                // BT.printf("%i",ms.read());
                 //LOG.printf("\n");
-                BT.printf("\n");
+                // BT.printf("\n");
 
                 tbt.reset();
             }
