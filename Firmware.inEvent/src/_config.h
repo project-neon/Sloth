@@ -6,7 +6,7 @@
 // Project
 //
 #define PROJECT_NAME            "Sloth Firmware"
-#define PROJECT_VERSION         "v0.5"
+#define PROJECT_VERSION         "v1.0"
 
 
 //
@@ -40,9 +40,10 @@
 //
 //Lap Sensor Settings
 //
-#define CROSS_COUNTER           100
+#define CROSS_COUNTER           8
 #define PIN_TRACK_MARKING_RIGHT	p13
 #define PIN_TRACK_MARKING_LEFT	p12
+#define NUMBER_PULSES           29500
 
 
 //
