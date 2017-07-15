@@ -12,11 +12,13 @@ The Neon's Line Follower Robot of 2017
 ## Firmware
 The firmware project was based on the [mbed](https://developer.mbed.org/) development platform and was developed in the [Atom Text Editor](https://atom.io/) equipped with the [Platformio Extension](http://docs.platformio.org/en/latest/ide/atom.html).
 
-### Parts of the `Firmware` puzzle
-* `main`: Controls the robots motor power, threads callbacks and PID constants.
+### Firmware parts overview
+* `main`: Controls all functions of the robot.
 * `lineReader`: Read the outside sensors and check the conditions.
-* `motors`: Initiates the "pinMODEs", sets power and directions of the motors.
-* `pid`: Configures PID control on the angular velocity of the robot.
+* `Motor`: Library for control the power and direction of the motors.
+* `PID`: Configures PID control on the angular velocity of the robot.
+* `QEI`: Libary for read the magnetic encoders. Available [here](https://developer.mbed.org/cookbook/QEI)
+* `QTRSensors`: Library for read the line sensors. Available [here](https://developer.mbed.org/users/phillippsm/code/PololuQTRSensors/).
 
 
 ## Eletronics
