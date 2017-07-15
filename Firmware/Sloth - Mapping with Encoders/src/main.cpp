@@ -5,15 +5,17 @@
 #include "_config.h"
 
 // Timers
-Timer tbt;
-Timer tlap;
-Timer tstop;
-Timer tsafeline;
-Timer tmark;
+Timer tbt;            // Debug the loop
+Timer tlap;           // Time of a lap
+Timer tstop;          // Stop the robot when the Number of Marks was mark
+Timer tsafeline;      // Used to control when the robot count a wrong mark in closed curves
+//Timer tmark;
 
-Timer taceleration;
+Timer taceleration;   // Change the speed of the robot after a time. This is because the robot "flip"
+                      // when are with max speed
 
 // Serial
+//Control the Communication with a Computer (Serial) and HC-05
 Serial PC(USBTX, USBRX);
 Serial BT(BTRX, BTTX);
 
@@ -44,6 +46,7 @@ PinName pinslinereader[NUM_SENSORS] = {
     PIN_LR_S4,
     PIN_LR_S5 // Most Right Sensor
 };
+
 QTRSensorsAnalog linereader(pinslinereader,
     NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, EMITTER_PIN);
 unsigned int sensorvalues[NUM_SENSORS];
@@ -64,36 +67,40 @@ int ms1count = 0;
 int ms2count = 0;
 bool robotstate = true;
 
-// PIDs
-// SPEED: 0.5; KP: 0.00025; KI: 0.0; KD:0.000005; BAT: 7.76
-//
-// float kpdir = 0.0004;      nota 8 com 8.25V
-// float kidir = 0.00000;
-// float kddir = 0.0000045;
+/************************* PIDs Values *************************************\
 
-//Nota 9 TOTAL ESTAVEL COM O PEZINHO 8.25V 26 segundos
-// speed = .53
-// kp 0.0004
-// kd 0.0000045
+SPEED: 0.5; KP: 0.00025; KI: 0.0; KD:0.000005; BAT: 7.76
 
-// 21 segundos Meio Estavel, apenas nas curvas (7) 8.14V
-// float speedbase = .62;
-// float kpdir = 0.00051;
-// float kidir = 0.00000;
-// float kddir = 0.0000045;
+float kpdir = 0.0004;      nota 8 com 8.25V
+float kidir = 0.00000;
+float kddir = 0.0000045;
 
-// 17 segundos Otimo, apenas nas curvas 8.2V
-// float speedbase = .62;
-// float kpdir = 0.00051;
-// float kidir = 0.00000;
-// float kddir = 0.0000045;
+Nota 9 TOTAL ESTAVEL COM O PEZINHO 8.25V 26 segundos
+speed = .53
+kp 0.0004
+kd 0.0000045
 
-// ~ 16.9  segudos 8/10 8.24V pequena trepidação nas curvas | Velocidade .80
-// float speedbase = .65;
-// float kpdir = 0.00057;
-// float kidir = 0.00000;
-// float kddir = 0.0000048;
+21 segundos Meio Estavel, apenas nas curvas (7) 8.14V
+float speedbase = .62;
+float kpdir = 0.00051;
+float kidir = 0.00000;
+float kddir = 0.0000045;
 
+17 segundos Otimo, apenas nas curvas 8.2V
+float speedbase = .62;
+float kpdir = 0.00051;
+float kidir = 0.00000;
+float kddir = 0.0000045;
+
+~ 16.9  segudos 8/10 8.24V pequena trepidação nas curvas | Velocidade .80
+float speedbase = .65;
+float kpdir = 0.00057;
+float kidir = 0.00000;
+float kddir = 0.0000048;
+
+*/
+
+//PID
 float speedbase = .65;
 float kpdir = 0.00040;
 float kidir = 0.00000;
@@ -101,11 +108,10 @@ float kddir = 0.0000052;
 float setpointdir = 0.0;
 float directiongain = 0.0;
 
-/////////////////Map
+//Mapping using Marks and Encoders
 struct Mark {
   float speed;
-  //float acceleration;
-  int duration;
+  int duration; //Number of pulses
   float kp;
   float ki;
   float kd;
@@ -113,9 +119,8 @@ struct Mark {
 
 // Bost Reta no meio
 Mark marks[] = {
-  {.63, 1450, 0.0004, 0, 0.000005},
-  {.99, 6500, 0.00035, 0, 0.0000052}, //Reta Inicial e curva incial
-  //{.99, 2900, 0.00040, 0, 0.0000052},
+  {.63, 1450, 0.0004, 0, 0.000005},     //Start with low speed
+  {.99, 6500, 0.00035, 0, 0.0000052},   //PID for straight line
   {.82, 11200, 0.00039, 0, 0.000005},
   {.99, 900, 0.00035, 0, 0.0000052},
   {.82, 6940, 0.00039, 0, 0.000005},
@@ -187,10 +192,7 @@ void btcallback() {
             break;
         case 'J':
             nowEnc = ((enc1.getPulses() + enc2.getPulses()) / 2);
-            BT.printf("Encoder Agora: %.0f \n", nowEnc);
-            break;
-        case 'K':
-            BT.printf("%s\n", "ALTERADIN.");
+            BT.printf("Encoder Right Now: %.0f \n", nowEnc);
             break;
     }
     //directioncontrol.setTunings(kpdir, kidir, kddir);
@@ -214,7 +216,7 @@ void markTrack() {
   // Base speed to set
   float targetSpeed = mark.speed;
   //float targetDelta = (targetSpeed - currentSpeed);
-//  float speedDelta = mark.acceleration * dt;
+  //float speedDelta = mark.acceleration * dt;
 
   // // Revert target if lt 0
   // if (targetDelta < 0)
@@ -228,13 +230,14 @@ void markTrack() {
   //PC.printf("M: %f %f %f %f\n", mark.speed, mark.kp, mark.ki, mark.kd);
 }
 
+//Interrupt when Mark Left was change
 void ms1() {
     if (tsafeline > .1) {
       tsafeline.reset();
       tlap.start();
       ms1state = !ms1state;
       ms1count++;
-      leds[1] = true;
+      leds[1] = true; //Debug in led
       if (ms1count >= CROSS_COUNTER) {
           // robotstate = false;
           tstop.start();
@@ -242,12 +245,13 @@ void ms1() {
     }
 }
 
-
+//Interrupt when Mark Right was change
 void ms2() {
     ms2state = !ms1state;
     ms2count++;
     tsafeline.reset();
     leds[1] = true;
+//    Calculate Travelled Distance by encoders
     nowEnc = (enc1.getPulses() + enc2.getPulses()) / 2;
     deltaEnc = nowEnc - lastReader_enc;
     lastReader_enc = nowEnc;
@@ -267,6 +271,7 @@ int main() {
     directioncontrol.setTunings(kpdir, kidir, kddir);
     directioncontrol.setSetPoint(setpointdir);
 
+//        Activating Interrupt in fall
       marksensor1.fall(&ms1); //Sensor Right
     //  marksensor2.fall(&ms2); //Sensor Left
 
@@ -295,7 +300,7 @@ int main() {
     tsafeline.start();
     //tlap.start();
     taceleration.start();
-    tmark.start();
+    //tmark.start();
 
 //    Main Loop
     while(1) {
@@ -321,16 +326,12 @@ int main() {
 
       //BT.printf("M: %f %f %f %f\n", mark.speed, mark.kp, mark.ki, mark.kd);
 
-
-        // markTrack();
-
+//     Check if the robot complete the track
         if (pulses >= NUMBER_PULSES)
           robotstate = false;
           //robotstate = robotstate;
-        // if(ms2state)
-        //   markTrack();3,
 
-
+//      Stop the robot
         if (!robotstate) {
             m1.brake();
             m2.brake();
@@ -347,18 +348,22 @@ int main() {
               wait(.250);
             }
 
+//       FOLLOW lINE
         } else {
             // Position of the line: (left)-2500 to 2500(right)
             position = linereader.readLine(sensorvalues, QTR_EMITTERS_ON, WHITE_LINE) - 2500.0;
 
             directioncontrol.setProcessValue(position);
             directiongain = directioncontrol.compute();
+
+//          SET DIRECTIONS
             m1speed = currentSpeed + (directiongain > 0 ? -directiongain : 0);
             m2speed = currentSpeed + (directiongain < 0 ? +directiongain : 0);
             // BT.printf("PID is working? %f \n", directiongain);
             m1.speed(m1speed);
             m2.speed(m2speed);
 
+//Flash the led after detect the right mark
             if(tsafeline.read() > .2){
               leds[1] = 0;
             }
@@ -369,13 +374,13 @@ int main() {
               //robotstate = false;
             }
 
-            // if(taceleration.read()>1.5)
-            // {
-            //   speedbase = .82;
-            //   taceleration.stop();
-            // }
-
-            if (tbt.read() > .001) {
+          // if(taceleration.read()>1.5)
+          //   {
+          //     speedbase = .82;
+          //     taceleration.stop();
+          //   }
+          //
+             if (tbt.read() > .001) {
 
 //                LOG.printf("%i ", position);
 //                LOG.printf("%.3f ", directiongain);
