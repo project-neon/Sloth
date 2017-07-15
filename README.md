@@ -6,8 +6,8 @@ The Neon's Line Follower Robot of 2017
 # Parts of the puzzle
 * `Firmware`: Is the main firmware that controls all the functions of the robot.
 * `Software`: Is telemetry software for data acquisition from the robot.
-* `Eletric`: This keeps all the information about the electronics for the line following robot ‘NoFollow’.
-* `Mechanic`: Contains the STL files of the robot design.
+* `Eletronics`: This keeps all the information about the electronics for the line following robot ‘NoFollow’.
+* `Mechanics`: Contains the STL files of the robot design.
 
 ## Firmware
 The firmware project was based on the [mbed](https://developer.mbed.org/) development platform and was developed in the [Atom Text Editor](https://atom.io/) equipped with the [Platformio Extension](http://docs.platformio.org/en/latest/ide/atom.html).
