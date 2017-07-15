@@ -30,6 +30,7 @@ The eletronic board was developed in the [Circuit Maker](https://circuitmaker.co
 | 1 | TB6612FNG Dual Motor Driver Carrier | [World](https://www.pololu.com/product/713) | 4.95 | 
 | 1 | Bluetooth Module HC-05 | [World](https://www.robocore.net/loja/produtos/modulo-bluetooth-hc-05.html) | 12.30 | 
 | 2 | 30:1 Micro Metal Gearmotor HP 6V with Extended Motor Shaft | [World](https://www.pololu.com/product/2212) | 16.95 | 
+| 1 | Magnetic Encoder Pair Kit for Micro Metal Gearmotors | [World](https://www.pololu.com/product/3081) | 8.95 | 
 | 1 | Profuse 2S 7.4V 850 Mah LiPo Battery | [World](http://www.jsumo.com/profuse-2s-74v-850-mah-lipo-battery) | 13.50 | 
 
 
