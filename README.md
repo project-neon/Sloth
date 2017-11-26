@@ -1,7 +1,7 @@
 # Sloth
 The Neon's Line Follower Robot of 2017
 <div style="align=middle"><img src ="https://github.com/Project-Neon/Sloth/blob/master/Media/Sloth.png" /></div>
-<p align="center";> <b>The <strike>slowest</strike> fastest line follower robot on earth.</b> </p>
+<p align="center";> <b>The <strike>slowest</strike> fastest line follower in the ice age.</b> </p>
 
 # Parts of the puzzle
 * `Firmware`: Is the main firmware that controls all the functions of the robot.
