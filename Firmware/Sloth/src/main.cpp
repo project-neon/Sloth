@@ -31,7 +31,9 @@ float currentSpeed = 0.0;
 // Encoders
 QEI LeftEncoder (PIN_ENC1_A, PIN_ENC1_B, NC, PULSES_PER_REV); // Left Encoder
 QEI RightEncoder (PIN_ENC2_A, PIN_ENC2_B, NC, PULSES_PER_REV); // Right Encoder
-unsigned int currentPosition; // Robot current position in the track
+float currentPosition; // Robot current position in the track
+float leftDistance; // left distance by encoder (m)
+float rightDistance; // right distance by encoder (m)
 
 // Line Reader
 PinName pinsLineReader[NUM_SENSORS] = {
@@ -45,7 +47,7 @@ PinName pinsLineReader[NUM_SENSORS] = {
 QTRSensorsAnalog LineReader(pinsLineReader,
     NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, EMITTER_PIN);
 unsigned int sensorvalues[NUM_SENSORS];
-unsigned int linePosition; // line position in the line reader
+int linePosition; // line position in the line reader
 
 // Lap sensor settings
 // InterruptIn Marksensor1(PIN_TRACK_MARKING_RIGHT);
@@ -74,7 +76,7 @@ struct Setup {
 // Robot Standard Setups
 Setup SlowCurve = {0.50, 0.00048, 0, 0.0000045};
 // Setup Curve     = {0.60, 0.00045, 0, 0.0000045};
-Setup Curve     = {0.00, 0.00045, 0, 0.0000045};
+Setup Curve     = {0.60, 0.00050, 0, 0.0000080};
 Setup FastCurve = {0.80, 0.00040, 0, 0.0000040};
 Setup Straight  = {1.00, 0.00028, 0, 0.0000030};
 
@@ -113,9 +115,8 @@ void lineReaderCalibrate() {
   LOG.printf("%s", "Calibrating sensors...");
 
   leds[0] = 1;
-
   for (int i = 0; i < 500; i++)
-    LineReader.calibrate();
+    LineReader.calibrate(true);
 
   leds[0] = 0;
 
@@ -248,7 +249,13 @@ int main() {
   while(1) {
 
     // Get currrent position by encoders
-    currentPosition = (LeftEncoder.getPulses() + RightEncoder.getPulses()) / 2;
+    leftDistance = PULSES2DISTANCE(LeftEncoder.getPulses());
+    rightDistance = PULSES2DISTANCE(RightEncoder.getPulses());
+    // leftDistance = PULSES2DISTANCE(20000);
+    // rightDistance = PULSES2DISTANCE(400);
+    currentPosition = AVG(leftDistance, rightDistance);
+
+
 
     // Check if the robot complete the track
     if (currentPosition >= FINAL_TARGET_POSITION && STOP_BY_DISTANCE) {
@@ -317,22 +324,28 @@ int main() {
       leftmotorspeed = currentSpeed + (directiongain > 0 ? -directiongain : 0);
       righmotorspeed = currentSpeed + (directiongain < 0 ? +directiongain : 0);
       // LOG.printf("PID is working? %f \n", directiongain);
-      // LeftMotor.speed(leftmotorspeed);
-      // RightMotor.speed(righmotorspeed);
+      LeftMotor.speed(leftmotorspeed);
+      RightMotor.speed(righmotorspeed);
     }
 
     if (LogTimer.read() > LOG_INTERVAL && LOG_ENABLED) {
       // LOG.printf("%i\t", currentPosition);
       // LOG.printf("%i\t", TargetMark.position);
       // LOG.printf("%i\t", currentMark);
-       LOG.printf("%i", linePosition);
+
+      // LineReader.read(sensorvalues, QTR_EMITTERS_ON);
+      // for (int i = 0; i < 6; i++)
+      //   LOG.printf("%i\t", sensorvalues[i]);
+      // LOG.printf("%i", linePosition);
 
       // Manual Track Mapping
       // LOG.printf("%.2f\t", LapTimer.read());
-      // LOG.printf("%i\t", LeftEncoder.getPulses());
-      // LOG.printf("%.2f\t", RightEncoder.getPulses());
+      // LOG.printf("%.2f\t", leftDistance);
+      // LOG.printf("%.2f\t", rightDistance);
+      // LOG.printf("%.2f\t", currentPosition);
+      // LOG.printf("%.2f\t", DIF(leftDistance, rightDistance));
 
-      LOG.printf("%c","\n");
+      LOG.printf("%s\n","");
       LogTimer.reset();
     }
 

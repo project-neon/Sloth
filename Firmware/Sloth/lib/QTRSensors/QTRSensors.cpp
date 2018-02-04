@@ -63,7 +63,7 @@ void QTRSensors::init(PinName *pins, unsigned char numSensors,
         if (_pins == 0)
             return;
     }
-    
+
     unsigned char i;
     // Copy parameter values to local storage
     for (i = 0; i < _numSensors; i++) {
@@ -71,7 +71,7 @@ void QTRSensors::init(PinName *pins, unsigned char numSensors,
     }
 
     // Allocate the arrays
-    // Allocate Space for Calibrated Maximum On Values   
+    // Allocate Space for Calibrated Maximum On Values
     calibratedMaximumOn = (unsigned int*)malloc(sizeof(unsigned int)*_numSensors);
 
     // If the malloc failed, don't continue.
@@ -96,7 +96,7 @@ void QTRSensors::init(PinName *pins, unsigned char numSensors,
 
     for(i=0; i<_numSensors; i++)
         calibratedMaximumOff[i] = 0;
-        
+
     // Allocate Space for Calibrated Minimum On Values
     calibratedMinimumOn = (unsigned int*)malloc(sizeof(unsigned int)*_numSensors);
 
@@ -163,7 +163,6 @@ void QTRSensors::read(unsigned int *sensor_values, unsigned char readMode)
     } else {
         emittersOff();
     }
-
 
     readPrivate(sensor_values);
 
