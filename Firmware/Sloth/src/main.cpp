@@ -45,7 +45,7 @@ PinName pinsLineReader[NUM_SENSORS] = {
 QTRSensorsAnalog LineReader(pinsLineReader,
     NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, EMITTER_PIN);
 unsigned int sensorvalues[NUM_SENSORS];
-int linePosition; // line position in the line reader
+unsigned int linePosition; // line position in the line reader
 
 // Lap sensor settings
 // InterruptIn Marksensor1(PIN_TRACK_MARKING_RIGHT);
@@ -72,9 +72,11 @@ struct Setup {
 };
 
 // Robot Standard Setups
-Setup Slow = {0.50, 0.00048, 0, 0.0000045};
-Setup Normal = {0.65, 0.00048, 0, 0.0000045};
-Setup Fast = {1.00, 0.00028, 0, 0.0000030};
+Setup SlowCurve = {0.50, 0.00048, 0, 0.0000045};
+// Setup Curve     = {0.60, 0.00045, 0, 0.0000045};
+Setup Curve     = {0.00, 0.00045, 0, 0.0000045};
+Setup FastCurve = {0.80, 0.00040, 0, 0.0000040};
+Setup Straight  = {1.00, 0.00028, 0, 0.0000030};
 
 void setRobotSetup(Setup setup) {
   // Setup PID and Speed
@@ -91,22 +93,19 @@ struct Mark {
 };
 
 Mark Marks[] = { // {Positon, Speed Level}
-  {9100, Normal}, // Big Straight Start
-  {11200, Fast},  // Big Straight End
-  {13100, Normal},  // Big Curve Start
-  {15400, Fast},  // Big Curve End - Double S Start
-  {18300, Slow},  // Double S End - Straight Start
-  {18700, Fast},  // Straight End - S Start
-  {21000, Normal}, // S Start - Final Straight
-  {FINAL_TARGET_POSITION, Fast} // End Track
+  {9100,  Curve}, // Big Straight Start
+  {11200, Straight},  // Big Straight End
+  {13300, Curve},  // Big Curve Start
+  {15400, Straight},  // Big Curve End - Double S Start
+  {18300, SlowCurve},  // Double S End - Straight Start
+  {18700, Straight},  // Straight End - S Start
+  {21000, Curve}, // S Start - Final Straight
+  {FINAL_TARGET_POSITION, Straight} // End Track
 };
 
 // The target mark
 Mark TargetMark;
 int currentMark = 0;
-
-// Accelerate Speed
-// float targetSpeed = 0;
 
 // Function to calibrate the line reader
 void lineReaderCalibrate() {
@@ -227,6 +226,7 @@ int main() {
   LeftEncoder.reset();
   RightEncoder.reset();
 
+  // Clear mark sensors counters
   // ms1count = 0;
   // ms2count = 0;
 
@@ -234,11 +234,16 @@ int main() {
   LogTimer.start();
   LapTimer.start();
 
-  // Get first target mark  - 0
-  TargetMark = Marks[currentMark];
-  // Update Robot Setup
-  setRobotSetup(TargetMark.setup);
-
+  // Set the first setup of the Robot
+  if(MAPPING_ENABLE){
+    // Get first target mark - 0
+    TargetMark = Marks[currentMark];
+    // Update Robot Setup
+    setRobotSetup(TargetMark.setup);
+  } else {
+    // Update Robot Setup
+    setRobotSetup(Curve);
+  }
   // Main Loop
   while(1) {
 
@@ -246,17 +251,18 @@ int main() {
     currentPosition = (LeftEncoder.getPulses() + RightEncoder.getPulses()) / 2;
 
     // Check if the robot complete the track
-    if (currentPosition >= FINAL_TARGET_POSITION) {
+    if (currentPosition >= FINAL_TARGET_POSITION && STOP_BY_DISTANCE) {
       robotstate = false; // Stop the Robot
     }
 
     // Checks if medium lap time has been reached
-    if (LapTimer.read() > 14) {
+    if (LapTimer.read() > LAP_TIME && STOP_BY_TIME) {
       LapTimer.stop();
       robotstate = false; // Stop the robot
     }
 
     if (!robotstate) { // Stop the Robot
+      // Stop the robot and release the motors after
       LeftMotor.brake();
       RightMotor.brake();
       wait(.250);
@@ -277,7 +283,7 @@ int main() {
       // Print the robot position only for the first laps
       LOG.printf("Position: %i %i\t", currentPosition);
 
-      LOG.printf("%s\n", " ");
+      LOG.printf("%s\n", "");
 
       // Blink the LEDs
       while (1) {
@@ -293,7 +299,7 @@ int main() {
     else { // Follow the Line
 
       // Check if changed mark
-      if (currentPosition >= TargetMark.position) {
+      if (currentPosition >= TargetMark.position && MAPPING_ENABLE) {
         currentMark++;
         // Get current Target Mark
         TargetMark = Marks[currentMark];
@@ -311,21 +317,22 @@ int main() {
       leftmotorspeed = currentSpeed + (directiongain > 0 ? -directiongain : 0);
       righmotorspeed = currentSpeed + (directiongain < 0 ? +directiongain : 0);
       // LOG.printf("PID is working? %f \n", directiongain);
-      LeftMotor.speed(leftmotorspeed);
-      RightMotor.speed(righmotorspeed);
+      // LeftMotor.speed(leftmotorspeed);
+      // RightMotor.speed(righmotorspeed);
     }
 
-    if (LogTimer.read() > LOG_INTERVAL) {
+    if (LogTimer.read() > LOG_INTERVAL && LOG_ENABLED) {
       // LOG.printf("%i\t", currentPosition);
       // LOG.printf("%i\t", TargetMark.position);
       // LOG.printf("%i\t", currentMark);
+       LOG.printf("%i", linePosition);
 
       // Manual Track Mapping
       // LOG.printf("%.2f\t", LapTimer.read());
       // LOG.printf("%i\t", LeftEncoder.getPulses());
       // LOG.printf("%.2f\t", RightEncoder.getPulses());
 
-      //LOG.printf("%s\n", "");
+      LOG.printf("%c","\n");
       LogTimer.reset();
     }
 

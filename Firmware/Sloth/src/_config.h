@@ -13,7 +13,7 @@
 // Serial DEBUG
 //
 #define LOG_ENABLED true
-#define LOG if(LOG_ENABLED) PC
+#define LOG if(LOG_ENABLED) BT
 #define PC_SPEED  115200
 #define LOG_INTERVAL  0.01 // 10ms
 
@@ -47,13 +47,25 @@
 #define FINAL_TARGET_POSITION 21700
 
 //
+//STOP Settings
+//
+#define LAP_TIME 18
+#define STOP_BY_TIME true
+#define STOP_BY_DISTANCE false
+
+//
+//Marking Settings
+//
+#define MAPPING_ENABLE false
+
+//
 // Motors config (H-Bridge)
 //
 //#define SPEED_BASE	0.5
-#define PIN_M2_EN p26
+#define PIN_M2_EN   p26
 #define PIN_M2_IN1  p24
 #define PIN_M2_IN2  p25
-#define PIN_M1_EN p21
+#define PIN_M1_EN   p21
 #define PIN_M1_IN1  p23
 #define PIN_M1_IN2  p22
 
