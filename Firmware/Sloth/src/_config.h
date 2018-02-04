@@ -13,9 +13,9 @@
 // Serial DEBUG
 //
 #define LOG_ENABLED true
-#define LOG if(LOG_ENABLED) BT
+#define LOG if(LOG_ENABLED) PC
 #define PC_SPEED  115200
-#define LOG_INTERVAL  0.01 // 10ms
+#define LOG_INTERVAL  0.10 // 100ms
 
 //
 // Bluetooth Configs (Type here)
@@ -27,7 +27,7 @@
 //
 // Line Reader Settings
 //
-#define WHITE_LINE  1
+#define WHITE_LINE  true
 #define NUM_SENSORS 6  // number of sensors used
 #define NUM_SAMPLES_PER_SENSOR  1  // average 4 analog samples per sensor reading
 #define EMITTER_PIN p14  // emitter is controlled by digital pin 2
@@ -44,12 +44,12 @@
 #define CROSS_COUNTER 6
 #define PIN_TRACK_MARKING_RIGHT p13
 #define PIN_TRACK_MARKING_LEFT  p12
-#define FINAL_TARGET_POSITION 21700
+#define FINAL_TARGET_POSITION 10.579
 
 //
 //STOP Settings
 //
-#define LAP_TIME 18
+#define LAP_TIME 16
 #define STOP_BY_TIME true
 #define STOP_BY_DISTANCE false
 
@@ -72,12 +72,19 @@
 //
 // Encoder config (Quadrature)
 //
-#define PULSES_PER_REV 179
+#define PULSES_PER_REV 179.0
 #define PIN_ENC1_A  p30
 #define PIN_ENC1_B	p29
 #define PIN_ENC2_A	p28
 #define PIN_ENC2_B	p27
-#define WHEEL_RADIUS 0.032	// 32mm
-#define WHEEL_PERIMETER	0.10053096491f	// WHEEL_RADIUS * PI
+#define M_PI 3.14159
+#define WHEEL_RADIUS 0.016	// D = 32mm
+#define WHEEL_PERIMETER	(2.0*WHEEL_RADIUS*M_PI)	// WHEEL_RADIUS * PI
+#define PULSES2DISTANCE(p) (p / PULSES_PER_REV * WHEEL_PERIMETER)
+#define AVG(l,r) ((l + r) / 2.0)
+#define DIF(l,r) (l - r)
+//
+// Pulses to Distance
+//
 
 #endif
