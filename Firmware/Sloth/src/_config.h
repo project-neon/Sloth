@@ -6,16 +6,16 @@
 // Project
 //
 #define PROJECT_NAME            "Sloth Firmware"
-#define PROJECT_VERSION         "v1.0"
+#define PROJECT_VERSION         "v1.5"
 
 
 //
 // Serial DEBUG
 //
 #define LOG_ENABLED true
-#define LOG if(LOG_ENABLED) PC
+#define LOG if(LOG_ENABLED) BT
 #define PC_SPEED  115200
-#define LOG_INTERVAL  0.10 // 100ms
+#define LOG_INTERVAL  0.01 //
 
 //
 // Bluetooth Configs (Type here)
@@ -44,45 +44,45 @@
 #define CROSS_COUNTER 6
 #define PIN_TRACK_MARKING_RIGHT p13
 #define PIN_TRACK_MARKING_LEFT  p12
-#define FINAL_TARGET_POSITION 10.579
+#define FINAL_TARGET_POSITION   15      //10.579 OLD
 
 //
 //STOP Settings
 //
-#define LAP_TIME 16
-#define STOP_BY_TIME true
-#define STOP_BY_DISTANCE false
+#define LAP_TIME 20
+#define STOP_BY_TIME false
+#define STOP_BY_DISTANCE true
 
 //
 //Marking Settings
 //
-#define MAPPING_ENABLE false
+#define MAPPING_ENABLE true
 
 //
 // Motors config (H-Bridge)
 //
 //#define SPEED_BASE	0.5
-#define PIN_M2_EN   p26
-#define PIN_M2_IN1  p24
-#define PIN_M2_IN2  p25
-#define PIN_M1_EN   p21
-#define PIN_M1_IN1  p23
-#define PIN_M1_IN2  p22
+#define PIN_M2_EN   p21
+#define PIN_M2_IN1  p23
+#define PIN_M2_IN2  p22
+#define PIN_M1_EN   p26
+#define PIN_M1_IN1  p25
+#define PIN_M1_IN2  p24
 
 //
 // Encoder config (Quadrature)
 //
 #define PULSES_PER_REV 179.0
-#define PIN_ENC1_A  p30
-#define PIN_ENC1_B	p29
-#define PIN_ENC2_A	p28
-#define PIN_ENC2_B	p27
-#define M_PI 3.14159
+#define PIN_ENC1_A  p27
+#define PIN_ENC1_B	p28
+#define PIN_ENC2_A	p30
+#define PIN_ENC2_B	p29
+//#define M_PI 3.14159
 #define WHEEL_RADIUS 0.016	// D = 32mm
 #define WHEEL_PERIMETER	(2.0*WHEEL_RADIUS*M_PI)	// WHEEL_RADIUS * PI
 #define PULSES2DISTANCE(p) (p / PULSES_PER_REV * WHEEL_PERIMETER)
 #define AVG(l,r) ((l + r) / 2.0)
-#define DIF(l,r) (l - r)
+#define DIF(l,r) (r - l)
 //
 // Pulses to Distance
 //

@@ -7,6 +7,7 @@
 // Timers
 Timer LogTimer; // Debug the loop
 Timer LapTimer; // Time of a lap
+Timer taceleration;
 
 // Serial
 //Control the Communication with a Computer (Serial) and HC-05
@@ -22,11 +23,14 @@ DigitalOut leds[4] = {
 };
 
 // Motors
-Motor LeftMotor(PIN_M1_EN, PIN_M1_IN1, PIN_M1_IN2); // Left Motor
+Motor LeftMotor(PIN_M1_EN, PIN_M1_IN1, PIN_M1_IN2); // Lefut Motor
 Motor RightMotor(PIN_M2_EN, PIN_M2_IN1, PIN_M2_IN2); // Right Motor
 float leftmotorspeed = 0.0;
 float righmotorspeed = 0.0;
 float currentSpeed = 0.0;
+float aceleration = 0.0;
+float futureSpeed = 0.0;
+float acelerationinterval = 0.0;
 
 // Encoders
 QEI LeftEncoder (PIN_ENC1_A, PIN_ENC1_B, NC, PULSES_PER_REV); // Left Encoder
@@ -68,21 +72,26 @@ PID directioncontrol(0, 0, 0);
 // Robot Setups
 struct Setup {
   float speed;
+  float aceleration;
   float kp;
   float ki;
   float kd;
 };
 
+float highAceleration = 0.1;
+float slowAceleration = 0.05;
 // Robot Standard Setups
-Setup SlowCurve = {0.50, 0.00048, 0, 0.0000045};
+Setup SlowCurve = {0.30, highAceleration,  0.00025, 0, 0.0000030};
 // Setup Curve     = {0.60, 0.00045, 0, 0.0000045};
-Setup Curve     = {0.60, 0.00050, 0, 0.0000080};
-Setup FastCurve = {0.80, 0.00040, 0, 0.0000040};
-Setup Straight  = {1.00, 0.00028, 0, 0.0000030};
+Setup Curve     = {0.50, slowAceleration,   0.00018, 0, 0.0000010};
+Setup FastCurve = {0.80, highAceleration,   0.00025, 0, 0.0000030};
+Setup Straight  = {1.00, highAceleration,   0.00020, 0, 0.0000025};
+
 
 void setRobotSetup(Setup setup) {
   // Setup PID and Speed
   currentSpeed = setup.speed;
+  aceleration = setup.aceleration;
   directioncontrol.setTunings(setup.kp, setup.ki, setup.kd);
   // If line position is 0, the robot is just over the line
   directioncontrol.setSetPoint(0);
@@ -90,18 +99,24 @@ void setRobotSetup(Setup setup) {
 
 // Mark Struct
 struct Mark {
-  unsigned int position; // number of pulses
+  float position; // number of pulses
   Setup setup; // robot setup
 };
 
+// Mark Marks[] = { // {Positon, Speed Level}
+//   {5.11,  Curve}, // Big Straight Start
+//   {6.29, Straight},  // Big Straight End
+//   {7.469, Curve},  // Big Curve Start
+//   {8.65, Straight},  // Big Curve End - Double S Start
+//   {10.27, SlowCurve},  // Double S End - Straight Start
+//   {10.5023, Straight},  // Straight End - S Start
+//   {11.794, Curve}, // S Start - Final Straight
+//   {FINAL_TARGET_POSITION, Straight} // End Track
+// };
+
 Mark Marks[] = { // {Positon, Speed Level}
-  {9100,  Curve}, // Big Straight Start
-  {11200, Straight},  // Big Straight End
-  {13300, Curve},  // Big Curve Start
-  {15400, Straight},  // Big Curve End - Double S Start
-  {18300, SlowCurve},  // Double S End - Straight Start
-  {18700, Straight},  // Straight End - S Start
-  {21000, Curve}, // S Start - Final Straight
+  {0.20,  SlowCurve}, // Big Straight Start
+  {100.29, Curve},  // Big Straight End
   {FINAL_TARGET_POSITION, Straight} // End Track
 };
 
@@ -234,6 +249,7 @@ int main() {
   // Start Timers
   LogTimer.start();
   LapTimer.start();
+  taceleration.start();
 
   // Set the first setup of the Robot
   if(MAPPING_ENABLE){
@@ -267,6 +283,7 @@ int main() {
       LapTimer.stop();
       robotstate = false; // Stop the robot
     }
+
 
     if (!robotstate) { // Stop the Robot
       // Stop the robot and release the motors after
@@ -312,6 +329,7 @@ int main() {
         TargetMark = Marks[currentMark];
         // Update Robot Setup
         setRobotSetup(TargetMark.setup);
+        futureSpeed = Marks[currentMark+1].setup.speed;
       }
 
       // Position of the line: (left)-2500 to 2500(right)
@@ -324,8 +342,15 @@ int main() {
       leftmotorspeed = currentSpeed + (directiongain > 0 ? -directiongain : 0);
       righmotorspeed = currentSpeed + (directiongain < 0 ? +directiongain : 0);
       // LOG.printf("PID is working? %f \n", directiongain);
-      LeftMotor.speed(leftmotorspeed);
-      RightMotor.speed(righmotorspeed);
+       LeftMotor.speed(leftmotorspeed);
+       RightMotor.speed(righmotorspeed);
+    }
+    acelerationinterval = (futureSpeed - currentPosition)/aceleration/10; //Acelerate the robot by the necessary speed 10 times
+    if (currentSpeed < futureSpeed && taceleration.read() > acelerationinterval && false) {
+      currentSpeed += aceleration;
+      taceleration.reset();
+      //BT.printf("Velocidade: %.2f \n", speedbase);
+      //robotstate = false;
     }
 
     if (LogTimer.read() > LOG_INTERVAL && LOG_ENABLED) {
@@ -334,19 +359,18 @@ int main() {
       // LOG.printf("%i\t", currentMark);
 
       // LineReader.read(sensorvalues, QTR_EMITTERS_ON);
-      // for (int i = 0; i < 6; i++)
-      //   LOG.printf("%i\t", sensorvalues[i]);
-      // LOG.printf("%i", linePosition);
+       //for (int i = 0; i < 6; i++)
+        //LOG.printf("%i\t", sensorvalues[i]);
+       //LOG.printf("%i", linePosition);
 
       // Manual Track Mapping
       // LOG.printf("%.2f\t", LapTimer.read());
-      // LOG.printf("%.2f\t", leftDistance);
-      // LOG.printf("%.2f\t", rightDistance);
-      // LOG.printf("%.2f\t", currentPosition);
-      // LOG.printf("%.2f\t", DIF(leftDistance, rightDistance));
-
-      LOG.printf("%s\n","");
-      LogTimer.reset();
+       // LOG.printf("%.4f\t", leftDistance);
+       // LOG.printf("%.4f\t", rightDistance);
+       // //LOG.printf("%.2f\t", currentPosition);
+       // LOG.printf("%.4f\t", DIF(leftDistance, rightDistance));
+       // LOG.printf("%s\n","");
+       LogTimer.reset();
     }
 
   }
