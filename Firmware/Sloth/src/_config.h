@@ -8,7 +8,6 @@
 #define PROJECT_NAME            "Sloth Firmware"
 #define PROJECT_VERSION         "v1.5"
 
-
 //
 // Serial DEBUG
 //
@@ -44,19 +43,21 @@
 #define CROSS_COUNTER 6
 #define PIN_TRACK_MARKING_RIGHT p13
 #define PIN_TRACK_MARKING_LEFT  p12
-#define FINAL_TARGET_POSITION   15      //10.579 OLD
 
 //
-//STOP Settings
+// General Settings
 //
-#define LAP_TIME 20
 #define STOP_BY_TIME false
+#define LAP_TIME 24
 #define STOP_BY_DISTANCE true
+#define FINAL_TARGET_POSITION   21.5
+#define ACCELERATION_ENABLED true
+#define ACCELERATION_INTERVAL 0.01
+#define MAPPING_ENABLED true
 
 //
 //Marking Settings
 //
-#define MAPPING_ENABLE true
 
 //
 // Motors config (H-Bridge)
