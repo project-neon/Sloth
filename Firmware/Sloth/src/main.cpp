@@ -56,6 +56,7 @@ int linePosition; // line position in the line reader
 // InterruptIn Marksensor1(PIN_TRACK_MARKING_RIGHT);
 // InterruptIn Marksensor2(PIN_TRACK_MARKING_LEFT);
 
+// Counters of left and Right sensors
 // bool ms1state = false;
 // bool ms2state = false;
 // int ms1count = 0;
@@ -74,14 +75,12 @@ struct Setup {
   float kd;
 };
 
-float highAceleration = 0.1;
-float slowAceleration = 0.05;
 // Robot Standard Setups
-Setup SlowCurve = {0.60, 0.00025, 0, 0.0000050};
-// Setup Curve     = {0.60, 0.00045, 0, 0.0000045};
-Setup Curve     = {0.70, 0.00025, 0.0000000, 0.0000053};
-Setup FastCurve = {0.85, 0.00022, 0, 0.0000060};
-Setup Straight  = {1.00, 0.00020, 0, 0.0000075};
+                // Speed,   kP,   kI,   kD
+Setup SlowCurve = {0.75, 0.00040, 0, 0.0000070};
+Setup Curve     = {0.85, 0.00030, 0.0000000, 0.0000075};
+Setup FastCurve = {0.95, 0.00033, 0, 0.0000075};
+Setup Straight  = {1.00, 0.00019, 0, 0.0000075};
 
 void setRobotSetup(Setup setup) {
   // Setup PID and Speed
@@ -93,55 +92,45 @@ void setRobotSetup(Setup setup) {
 
 // Mark Struct
 struct Mark {
-  float position; // number of pulses
+  float position; // distance in meters
   float acceleration; // mark acceleration
   Setup setup; // robot setup
 };
 
-// Mark Marks[] = { // {Positon, Speed Level}
-//   {5.11,  Curve},
-//   {6.29, Straight},
-//   {7.469, Curve},  // Big Curve Start
-//   {8.65, Straight},  // Big Curve End - Double S Start
-//   {10.27, SlowCurve},  // Double S End - Straight Start
-//   {10.5023, Straight},  // Straight End - S Start
-//   {11.794, Curve}, // S Start - Final Straight
-//   {FINAL_TARGET_POSITION, Straight} // End Track
-// };
+Mark Marks[] = { // {Positon, Aceleration, Speed Level} //PS: Aceleration could be positive or negative "break"
+  {01.90, +1.5, Straight},    //00
+  {02.65, -10, Curve},        //01
 
-Mark Marks[] = { // {Positon, Speed Level}
-  {01.90, +1.5, Straight},
-  {02.65, -10, Curve},
+  {07.30, +0.75, FastCurve},  //02
+  {08.10, -10, SlowCurve},    //03
 
-  {07.30, +0.75, FastCurve},
-  {08.10, -10, SlowCurve},
+  {08.40, +0.75, Straight},   //04
+  {10.40, -10, SlowCurve},    //05
 
-  {08.40, +0.5, Straight},
-  {10.40, -10, SlowCurve},
+  {11.25, +1.25, Straight},   //06
+  {11.95, -10, Curve},        //07
 
-  {11.40, +0.75, Straight},
-  {11.90, -10, FastCurve},
+  {12.65, +1.5, Straight},    //08
+  {13.37, -10, SlowCurve},    //09
 
-  {12.70, +0.75, Straight},
-  {13.40, -10, SlowCurve},
+  {14.60, +1.5, Straight},    //10
+  {15.05, -10, SlowCurve},    //11
 
-  {14.70, +0.75, Straight},
-  {15.10, -10, SlowCurve},
+  {15.58, +0.75, Straight},   //12
+  {16.10, -10, SlowCurve},    //13
 
-  {15.60, +0.75, Straight},
-  {16.10, -10, SlowCurve},
+  {16.53, +0.75, Straight},   //14
+  {17.10, -10, SlowCurve},    //15
 
-  {16.60, +0.75, Straight},
-  {17.10, -10, SlowCurve},
+  {17.43, +0.75, Straight},   //16
+  {18.00, -10, SlowCurve},    //17
 
-  {17.50, +0.75, Straight},
-  {18.00, -10, SlowCurve},
+  {18.30, +0.75, Straight},   //18
+  {19.40, -10, Curve},        //19
 
-  {18.30, +0.75, Straight},
-  {19.40, -10, Curve},
+  {19.90, +0.60, Straight},   //20
 
-  {20.15, +0.75, Straight},
-  {FINAL_TARGET_POSITION, +2.5, FastCurve} // End Track
+  {FINAL_TARGET_POSITION, +0.5, Curve} // 21 End Track
 };
 
 // The target mark
@@ -257,7 +246,7 @@ int main() {
   RightMotor.coast();
 
   // Calibrate the line sensor
-  wait(1);
+  wait(2);
   lineReaderCalibrate();
   LOG.printf("%s\n", "Sensors Calibrated");
   wait(2);
@@ -283,16 +272,19 @@ int main() {
     // Update Robot Setup
     setRobotSetup(TargetMark.setup);
   } else {
+    // Get first target mark - 0
+    TargetMark = Marks[currentMark];
+    acceleration = TargetMark.acceleration;
     // Update Robot Setup
     setRobotSetup(Curve);
   }
   // Main Loop
   while(1) {
 
-    // Get currrent position by encoders
+    // Get currrent position by encoders and convert to meters
     leftDistance = PULSES2DISTANCE(LeftEncoder.getPulses());
     rightDistance = PULSES2DISTANCE(RightEncoder.getPulses());
-    currentPosition = AVG(leftDistance, rightDistance);
+    currentPosition = AVG(leftDistance, rightDistance); //get average
 
     // Check if the robot complete the track
     if (currentPosition >= FINAL_TARGET_POSITION && STOP_BY_DISTANCE) {
@@ -340,6 +332,7 @@ int main() {
       }
 
     }
+
     else { // Follow the Line
 
       // Check if changed mark
@@ -361,6 +354,7 @@ int main() {
       // Speed update with acceleration
       if (ACCELERATION_ENABLED) {
         if (AccTimer.read() > ACCELERATION_INTERVAL) {
+          // check if the robot accelerates or decelerates
           if ((acceleration > 0 && currentSpeed < targetSpeed) || (acceleration < 0 && currentSpeed > targetSpeed)) {
             currentSpeed += acceleration * ACCELERATION_INTERVAL;
             currentSpeed = currentSpeed > targetSpeed ? targetSpeed : currentSpeed < 0.0 ? 0.0 : currentSpeed;
@@ -389,18 +383,26 @@ int main() {
       // LOG.printf("%i\t", TargetMark.position);
       // LOG.printf("%i\t", currentMark);
 
+      // Certifies correct operation of line sensors
       // LineReader.read(sensorvalues, QTR_EMITTERS_ON);
        //for (int i = 0; i < 6; i++)
         //LOG.printf("%i\t", sensorvalues[i]);
-     //LOG.printf("%i", linePosition);
+      //LOG.printf("%i", linePosition);
+
+     // Certifies correct operation of encoders
      //LOG.printf("%.4f\t", leftDistance);
      //LOG.printf("%.4f\t", rightDistance);
 
+     // Certifies correct operation of motors
+     // LOG.printf("PID is working? %f \n", directiongain);
+     // LOG.printf("%.2f\t", leftmotorspeed)
+     // LOG.printf("%.2f\t", rightmotorspeed)
+
       // Manual Track Mapping
-      // LOG.printf("%.2f\t", LapTimer.read());
-      // LOG.printf("%.2f\t", currentPosition);
-      // LOG.printf("%.4f\t", DIF(leftDistance, rightDistance));
-      // LOG.printf("%s\n","");
+      LOG.printf("%.2f\t", LapTimer.read());
+      LOG.printf("%.2f\t", currentPosition);
+      LOG.printf("%.4f\t", DIF(leftDistance, rightDistance));
+      LOG.printf("%s\n","");
       LogTimer.reset();
     }
   }
