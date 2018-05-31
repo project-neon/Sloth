@@ -77,10 +77,30 @@ struct Setup {
 
 // Robot Standard Setups
                 // Speed,   kP,   kI,   kD
-Setup SlowCurve = {0.75, 0.00040, 0, 0.0000070};
-Setup Curve     = {0.85, 0.00030, 0.0000000, 0.0000075};
-Setup FastCurve = {0.95, 0.00033, 0, 0.0000075};
-Setup Straight  = {1.00, 0.00019, 0, 0.0000075};
+// Setup Curve     = {0.85, 0.00030, 0.0000000, 0.0000075};
+
+/* MOTOR 10:1
+Setup SlowCurve = {0.3, 0.0020000, 0.000000, 0.000200};
+
+Setup Curve     = {0.4, 0.00020000, 0.000000, 0.000020};
+
+Setup Straight  = {1.0, 0.00030000, 0.000000, 0.00001};
+Setup FastCurve     = {0.4, 0.00020000, 0.000000, 0.000020};
+
+Setup Stop      = {0.1, 0.000100, 0, 0.000001};
+*/
+
+// MOTOR 30:1
+Setup SlowCurve = {0.62, 0.00025000, 0.000000, 0.0000050};
+
+Setup Curve     = {0.6, 0.00022, 0.000000, 0.0000050};
+
+Setup Straight  = {1.0, 0.00018, 0.000000, 0.0000075};
+
+Setup FastCurve = {0.7, 0.00022, 0.000000, 0.0000075};
+Setup FastFastCurve = {0.95, 0.00022, 0.000000, 0.0000075};
+
+Setup Stop      = {0.1, 0.000100, 0, 0.000001};
 
 void setRobotSetup(Setup setup) {
   // Setup PID and Speed
@@ -97,40 +117,33 @@ struct Mark {
   Setup setup; // robot setup
 };
 
-Mark Marks[] = { // {Positon, Aceleration, Speed Level} //PS: Aceleration could be positive or negative "break"
-  {01.90, +1.5, Straight},    //00
-  {02.65, -10, Curve},        //01
+Mark Marks[] = { // {Positon, Aceleration, Settings Level} //PS: Aceleration could be positive or negative "break"
 
-  {07.30, +0.75, FastCurve},  //02
-  {08.10, -10, SlowCurve},    //03
+  {00.78, +1.5, Straight},    //00
+  {01.2, -2, Curve},
+  {02.60, +1.0, Straight},
+  {03.2, -1.0, Curve},
+  {04.6, +1.0, Straight},  //02
+  {05.25, -1.0, Curve},    //03
+  {06.0, +1.0, Straight},   //04
+  // {06.5, -10, SlowCurve},    //05
+  //
+  // {06.8, +1.0, Curve},   //06
+  {07.25, -1.0, FastCurve},        //07
+  {08.5, +1.0, Straight},    //08
+  {08.95, -1.0, FastCurve},    //09
+  {09.6, +1.0, Straight},    //10
+  {10.80, -1.0, FastFastCurve},    //11
 
-  {08.40, +0.75, Straight},   //04
-  {10.40, -10, SlowCurve},    //05
+  {11.0, +1.0, Straight},   //12
+  {11.50, -1.0, Curve},    //13
+  {11.9, +1.0, Straight},   //14
+  {12.60, -1, Curve},    //15
+  //
+  {13.2, +1.00, FastCurve},   //16
 
-  {11.25, +1.25, Straight},   //06
-  {11.95, -10, Curve},        //07
-
-  {12.65, +1.5, Straight},    //08
-  {13.37, -10, SlowCurve},    //09
-
-  {14.60, +1.5, Straight},    //10
-  {15.05, -10, SlowCurve},    //11
-
-  {15.58, +0.75, Straight},   //12
-  {16.10, -10, SlowCurve},    //13
-
-  {16.53, +0.75, Straight},   //14
-  {17.10, -10, SlowCurve},    //15
-
-  {17.43, +0.75, Straight},   //16
-  {18.00, -10, SlowCurve},    //17
-
-  {18.30, +0.75, Straight},   //18
-  {19.40, -10, Curve},        //19
-
-  {19.90, +0.60, Straight},   //20
-
-  {FINAL_TARGET_POSITION, +0.5, Curve} // 21 End Track
+  {FINAL_TARGET_POSITION, +1.5, Straight}
+  // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
 };
 
 // The target mark
@@ -141,35 +154,32 @@ int currentMark = 0;
 void lineReaderCalibrate() {
 
   LOG.printf("%s", "Calibrating sensors...");
-
   leds[0] = 1;
   for (int i = 0; i < 500; i++)
     LineReader.calibrate(true);
-
   leds[0] = 0;
-
   LOG.printf("%s\n", "Done.");
+  //
+  // for (int i = 0; i < NUM_SENSORS; i++)
+  //   LOG.printf("Min: %4i \t", LineReader.calibratedMinimumOn[i]);
+  //
+  // LOG.printf("%s", "\n");
+  //
+  // for (int i = 0; i < NUM_SENSORS; i++)
+  //   LOG.printf("Max: %4i \t", LineReader.calibratedMaximumOn[i]);
 
-  for (int i = 0; i < NUM_SENSORS; i++)
-    LOG.printf("Min: %4i \t", LineReader.calibratedMinimumOn[i]);
-
-  LOG.printf("%s", "\n");
-
-  for (int i = 0; i < NUM_SENSORS; i++)
-    LOG.printf("Max: %4i \t", LineReader.calibratedMaximumOn[i]);
-
-  LOG.printf("%s", "\n");
-  LOG.printf("%s", "\n");
+  // LOG.printf("%s", "\n");
+  // LOG.printf("%s", "\n");
 }
 
 void btcallback() {
   char rcvd = BT.getc();
   switch (rcvd) {
     // case 'A':
-    //   kpdir += 0.00001;
+    //   kpdir += 0.01;
     //   break;
     // case 'B':
-    //   kpdir -= 0.00001;
+    //   kpdir -= 0.01;
     //   break;
     // case 'C':
     //   kidir += 0.0000001;
@@ -178,17 +188,17 @@ void btcallback() {
     //   kidir -= 0.0000001;
     //   break;
     // case 'E':
-    //   kddir += 0.0000001;
+    //   kddir += 0.000001;
     //   break;
     // case 'F':
-    //   kddir -= 0.0000001;
+    //   kddir -= 0.000001;
     //   break;
-    case 'G':
-      //speedbase += 0.01;
-      break;
-    case 'H':
-      //speedbase -= 0.01;
-      break;
+    // case 'G':
+    //   speedbase += 0.01;
+    //   break;
+    // case 'H':
+    //   speedbase -= 0.01;
+    //   break;
     case 'I':
       robotstate = false;
       break;
@@ -235,6 +245,8 @@ int main() {
   PC.baud(PC_SPEED);
   BT.baud(BT_SPEED);
   BT.attach(&btcallback);
+  PC.printf("%s ", PROJECT_NAME); PC.printf("%s\n", PROJECT_VERSION);
+  BT.printf("%s ", PROJECT_NAME); BT.printf("%s\n", PROJECT_VERSION);
   LOG.printf("%s ", PROJECT_NAME); LOG.printf("%s\n", PROJECT_VERSION);
 
   // Activating Interrupt in fall for the Mark Sensors
@@ -249,7 +261,7 @@ int main() {
   wait(2);
   lineReaderCalibrate();
   LOG.printf("%s\n", "Sensors Calibrated");
-  wait(2);
+  wait(4);
 
   // Reset Encoders
   LeftEncoder.reset();
@@ -276,7 +288,7 @@ int main() {
     TargetMark = Marks[currentMark];
     acceleration = TargetMark.acceleration;
     // Update Robot Setup
-    setRobotSetup(Curve);
+    setRobotSetup(SlowCurve);
   }
   // Main Loop
   while(1) {
@@ -299,9 +311,15 @@ int main() {
 
     if (!robotstate) { // Stop the Robot
       // Stop the robot and release the motors after
+      // wait(.1);
+      // LeftMotor.brake();
+      // RightMotor.brake();
+      // LeftMotor.speed(-1.0);
+      // RightMotor.speed(-1.0);
+      // wait(.1);
       LeftMotor.brake();
       RightMotor.brake();
-      wait(.250);
+      wait(.500);
       LeftMotor.coast();
       RightMotor.coast();
 
@@ -310,14 +328,14 @@ int main() {
 
       // Print some data for statistics
       float laptime = LapTimer.read();
-      float tracklength = (currentPosition / PULSES_PER_REV) * WHEEL_PERIMETER;
-      float mediumspeed = tracklength / laptime;
+      // float tracklength = (currentPosition / PULSES_PER_REV) * WHEEL_PERIMETER;
+      float mediumspeed = currentPosition / laptime;
       LOG.printf("Time Lap: %.5f\t", laptime);
-      LOG.printf("Track Length: %.2fm\t", tracklength);
-      LOG.printf("Medium Speed: %.2fm/s\t",  mediumspeed);
+      LOG.printf("Track Length: %.2fm\t ", currentPosition);
+      LOG.printf("Medium Speed: %.2fm/s\t ",  mediumspeed);
 
       // Print the robot position only for the first laps
-      LOG.printf("Position: %i %i\t", currentPosition);
+      LOG.printf("Position: %.2f\t ", currentPosition);
 
       LOG.printf("%s\n", "");
 
@@ -326,7 +344,7 @@ int main() {
         for (int i = 0; i <= 3; i++) {
           for (int j = 0; j <= 3; j++) {
             leds[j] = j == i;
-            wait(.250);
+            wait(.050);
           }
         }
       }
@@ -370,8 +388,8 @@ int main() {
       righmotorspeed = currentSpeed + (directiongain < 0 ? +directiongain : 0);
 
       // Constrain the speed value to [0.0, 1.0] interval
-      leftmotorspeed = leftmotorspeed > 1.0 ? 1.0 : leftmotorspeed < 0.0 ? 0.0 : leftmotorspeed;
-      righmotorspeed = righmotorspeed > 1.0 ? 1.0 : righmotorspeed < 0.0 ? 0.0 : righmotorspeed;
+      leftmotorspeed = leftmotorspeed > 1.0 ? 1.0 : leftmotorspeed < -REVERSE ? -REVERSE : leftmotorspeed;
+      righmotorspeed = righmotorspeed > 1.0 ? 1.0 : righmotorspeed < -REVERSE ? -REVERSE : righmotorspeed;
 
       // LOG.printf("PID is working? %f \n", directiongain);
       LeftMotor.speed(leftmotorspeed);
@@ -385,13 +403,15 @@ int main() {
 
       // Certifies correct operation of line sensors
       // LineReader.read(sensorvalues, QTR_EMITTERS_ON);
-       //for (int i = 0; i < 6; i++)
-        //LOG.printf("%i\t", sensorvalues[i]);
-      //LOG.printf("%i", linePosition);
+       // for (int i = 0; i < 6; i++)
+        // LOG.printf("%i \t", sensorvalues[i]);
+
 
      // Certifies correct operation of encoders
-     //LOG.printf("%.4f\t", leftDistance);
-     //LOG.printf("%.4f\t", rightDistance);
+     // LOG.printf("Left Encoder: %i \t", LeftEncoder.getPulses());
+     // LOG.printf("Right Encoder: %i \t", RightEncoder.getPulses());
+     // LOG.printf("%.4f\t", leftDistance);
+     // LOG.printf("%.4f\t", rightDistance);
 
      // Certifies correct operation of motors
      // LOG.printf("PID is working? %f \n", directiongain);
@@ -399,9 +419,12 @@ int main() {
      // LOG.printf("%.2f\t", rightmotorspeed)
 
       // Manual Track Mapping
-      LOG.printf("%.2f\t", LapTimer.read());
-      LOG.printf("%.2f\t", currentPosition);
-      LOG.printf("%.4f\t", DIF(leftDistance, rightDistance));
+      // LOG.printf("%.2f ", LapTimer.read());
+      // LOG.printf("Line: %i \t", linePosition);
+      // LOG.printf("%.4f,", currentPosition);
+      // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
+
+
       LOG.printf("%s\n","");
       LogTimer.reset();
     }

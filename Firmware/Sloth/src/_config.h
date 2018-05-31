@@ -6,7 +6,7 @@
 // Project
 //
 #define PROJECT_NAME            "Sloth Firmware"
-#define PROJECT_VERSION         "v1.5"
+#define PROJECT_VERSION         "v2.0"
 
 //
 // Serial DEBUG
@@ -48,9 +48,10 @@
 // General Settings
 //
 #define STOP_BY_TIME false
-#define LAP_TIME 24
+#define LAP_TIME 20
 #define STOP_BY_DISTANCE true
-#define FINAL_TARGET_POSITION   21.5
+#define FINAL_TARGET_POSITION   14.0
+// #define FINAL_TARGET_POSITION   1.5
 #define ACCELERATION_ENABLED true
 #define ACCELERATION_INTERVAL 0.01
 #define MAPPING_ENABLED true
@@ -62,18 +63,19 @@
 //
 // Motors config (H-Bridge)
 //
-//#define SPEED_BASE	0.5
+#define REVERSE	0.00
 #define PIN_M2_EN   p21
-#define PIN_M2_IN1  p23
-#define PIN_M2_IN2  p22
+#define PIN_M2_IN1  p22
+#define PIN_M2_IN2  p23
 #define PIN_M1_EN   p26
-#define PIN_M1_IN1  p25
-#define PIN_M1_IN2  p24
+#define PIN_M1_IN1  p24
+#define PIN_M1_IN2  p25
 
 //
 // Encoder config (Quadrature)
 //
-#define PULSES_PER_REV 179.0
+#define PULSES_PER_REV 179.0 // 30:1
+// #define PULSES_PER_REV 61.0 // 10:1
 #define PIN_ENC1_A  p27
 #define PIN_ENC1_B	p28
 #define PIN_ENC2_A	p30
