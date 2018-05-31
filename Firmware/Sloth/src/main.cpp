@@ -3,6 +3,9 @@
 #include "PID.h"
 #include "QEI.h"
 #include "_config.h"
+#include "tracks.h"
+// #include "settingsSpeed.h"
+
 
 // Timers
 Timer LogTimer; // Debug the loop
@@ -68,12 +71,12 @@ float directiongain = 0.0;
 PID directioncontrol(0, 0, 0);
 
 // Robot Setups
-struct Setup {
-  float speed;
-  float kp;
-  float ki;
-  float kd;
-};
+// struct Setup {
+//   float speed;
+//   float kp;
+//   float ki;
+//   float kd;
+// };
 
 // Robot Standard Setups
                 // Speed,   kP,   kI,   kD
@@ -91,16 +94,18 @@ Setup Stop      = {0.1, 0.000100, 0, 0.000001};
 */
 
 // MOTOR 30:1
-Setup SlowCurve = {0.62, 0.00025000, 0.000000, 0.0000050};
+// Setup SlowCurve = {0.62, 0.00025000, 0.000000, 0.0000050};
+//
+// Setup Curve     = {0.6, 0.00022, 0.000000, 0.0000050};
+//
+// Setup Straight  = {1.0, 0.00018, 0.000000, 0.0000075};
+//
+// Setup FastCurve = {0.7, 0.00022, 0.000000, 0.0000075};
+// Setup FastFastCurve = {0.95, 0.00022, 0.000000, 0.0000075};
+//
+// Setup Stop      = {0.1, 0.000100, 0, 0.000001};
 
-Setup Curve     = {0.6, 0.00022, 0.000000, 0.0000050};
-
-Setup Straight  = {1.0, 0.00018, 0.000000, 0.0000075};
-
-Setup FastCurve = {0.7, 0.00022, 0.000000, 0.0000075};
-Setup FastFastCurve = {0.95, 0.00022, 0.000000, 0.0000075};
-
-Setup Stop      = {0.1, 0.000100, 0, 0.000001};
+Setup Normal     = {0.6, 0.00022, 0.000000, 0.0000050};
 
 void setRobotSetup(Setup setup) {
   // Setup PID and Speed
@@ -111,40 +116,40 @@ void setRobotSetup(Setup setup) {
 }
 
 // Mark Struct
-struct Mark {
-  float position; // distance in meters
-  float acceleration; // mark acceleration
-  Setup setup; // robot setup
-};
+// struct Mark {
+//   float position; // distance in meters
+//   float acceleration; // mark acceleration
+//   Setup setup; // robot setup
+// };
 
-Mark Marks[] = { // {Positon, Aceleration, Settings Level} //PS: Aceleration could be positive or negative "break"
-
-  {00.78, +1.5, Straight},    //00
-  {01.2, -2, Curve},
-  {02.60, +1.0, Straight},
-  {03.2, -1.0, Curve},
-  {04.6, +1.0, Straight},  //02
-  {05.25, -1.0, Curve},    //03
-  {06.0, +1.0, Straight},   //04
-  // {06.5, -10, SlowCurve},    //05
-  //
-  // {06.8, +1.0, Curve},   //06
-  {07.25, -1.0, FastCurve},        //07
-  {08.5, +1.0, Straight},    //08
-  {08.95, -1.0, FastCurve},    //09
-  {09.6, +1.0, Straight},    //10
-  {10.80, -1.0, FastFastCurve},    //11
-
-  {11.0, +1.0, Straight},   //12
-  {11.50, -1.0, Curve},    //13
-  {11.9, +1.0, Straight},   //14
-  {12.60, -1, Curve},    //15
-  //
-  {13.2, +1.00, FastCurve},   //16
-
-  {FINAL_TARGET_POSITION, +1.5, Straight}
-  // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
-};
+// Mark TRACK_EVENT_NAME[] = { // {Positon, Aceleration, Settings Level} //PS: Aceleration could be positive or negative "break"
+//
+//   {00.78, +1.5, Straight},    //00
+//   {01.2, -2, Curve},
+//   {02.60, +1.0, Straight},
+//   {03.2, -1.0, Curve},
+//   {04.6, +1.0, Straight},  //02
+//   {05.25, -1.0, Curve},    //03
+//   {06.0, +1.0, Straight},   //04
+//   // {06.5, -10, SlowCurve},    //05
+//   //
+//   // {06.8, +1.0, Curve},   //06
+//   {07.25, -1.0, FastCurve},        //07
+//   {08.5, +1.0, Straight},    //08
+//   {08.95, -1.0, FastCurve},    //09
+//   {09.6, +1.0, Straight},    //10
+//   {10.80, -1.0, FastFastCurve},    //11
+//
+//   {11.0, +1.0, Straight},   //12
+//   {11.50, -1.0, Curve},    //13
+//   {11.9, +1.0, Straight},   //14
+//   {12.60, -1, Curve},    //15
+//   //
+//   {13.2, +1.00, FastCurve},   //16
+//
+//   {FINAL_TARGET_POSITION, +1.5, Straight}
+//   // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
+// };
 
 // The target mark
 Mark TargetMark;
@@ -279,16 +284,16 @@ int main() {
   // Set the first setup of the Robot
   if(MAPPING_ENABLED){
     // Get first target mark - 0
-    TargetMark = Marks[currentMark];
+    TargetMark = TRACK_EVENT_NAME[currentMark];
     acceleration = TargetMark.acceleration;
     // Update Robot Setup
     setRobotSetup(TargetMark.setup);
   } else {
     // Get first target mark - 0
-    TargetMark = Marks[currentMark];
+    TargetMark = TRACK_EVENT_NAME[currentMark];
     acceleration = TargetMark.acceleration;
     // Update Robot Setup
-    setRobotSetup(SlowCurve);
+    setRobotSetup(Normal);
   }
   // Main Loop
   while(1) {
@@ -357,7 +362,7 @@ int main() {
       if (currentPosition >= TargetMark.position && MAPPING_ENABLED) {
         currentMark++;
         // Get current Target Mark
-        TargetMark = Marks[currentMark];
+        TargetMark = TRACK_EVENT_NAME[currentMark];
         acceleration = TargetMark.acceleration;
         // Update Robot Setup
         setRobotSetup(TargetMark.setup);
