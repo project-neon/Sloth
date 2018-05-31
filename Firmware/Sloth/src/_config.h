@@ -90,4 +90,13 @@
 // Pulses to Distance
 //
 
+#define SlowCurve 0
+#define Curve     1
+#define FastCurve 2
+#define Straight  3
+#define Stop      4
+
+#define TRACK_EVENT_NAME SMILE_2018
+#define GAIN_NUMBER k0
+
 #endif
