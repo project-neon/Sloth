@@ -41,6 +41,13 @@ typedef struct sloth_config
 	uint32_t kd;
 }sloth_config_t
 
+// todo: define a better name for this.
+typedef struct sloth_var_set
+{
+	sloth_ctrl_var_t var;
+	uint32_t value;
+}sloth_var_set_t
+
 /*  Defining a type for the structure of a command. */
 typedef struct sloth_cmd
 {
@@ -48,7 +55,7 @@ typedef struct sloth_cmd
 	// sloth_op_status_t 	status;	// for now, maybe status isn't a big deal
 	union
 	{
-		sloth_ctrl_var_t variable;
+		sloth_var_set_t  variable;
 		sloth_config_t	 config;
 	}
 	// uint16_t crc; // for now we dont need CRC
