@@ -1,3 +1,7 @@
+
+#ifndef MAIN_H
+#define MAIN_H
+
 struct Setup {
   float speed;
   float kp;
@@ -9,3 +13,6 @@ struct Mark {
   float acceleration; // mark acceleration
   Setup setup; // robot setup
 };
+
+
+#endif

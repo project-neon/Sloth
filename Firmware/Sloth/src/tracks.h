@@ -1,6 +1,8 @@
 #include "_config.h"
 #include "settingsSpeed.h"
 
+#ifndef TRACKS_H
+#define TRACKS_H
 /*
   This file contains the tracks that the robot has already done.
 */
@@ -28,6 +30,37 @@ Mark SMILE_2018[] = { // Distance in meters, Aceleration, Constants of gain (PID
   // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
 };
 
+Mark TEST[] = { // Distance in meters, Aceleration, Constants of gain (PID)
+  {00.1, +1.5, GAIN_NUMBER[Straight]},
+  {01.0, -2, GAIN_NUMBER[Curve]},
+  {01.5, -2, GAIN_NUMBER[SlowCurve]},
+  {FINAL_TARGET_POSITION, +1.5, GAIN_NUMBER[Straight]}
+  // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
+};
+
+Mark HACKPULICA[] = { // Distance in meters, Aceleration, Constants of gain (PID)
+  {00.75, +1.0, GAIN_NUMBER[Straight]},
+  {01.35, -10.0, GAIN_NUMBER[SlowCurve]},
+  {01.60, +1.0, GAIN_NUMBER[Straight]},
+  {02.10, -10.0, GAIN_NUMBER[Curve]},
+  {02.35, +1.0, GAIN_NUMBER[Straight]},//ALTERAR
+  {03.00, -10.0, GAIN_NUMBER[Curve]},
+  {03.35, +1.0, GAIN_NUMBER[Straight]},
+  {04.00, -10.0, GAIN_NUMBER[Curve]},
+  {04.35, +1.0, GAIN_NUMBER[Straight]},
+  {05.35, -10.0, GAIN_NUMBER[Curve]},
+  {06.50, +1.0, GAIN_NUMBER[Straight]},
+  {08.10, -10.0, GAIN_NUMBER[Curve]},
+  {08.90, +1.0, GAIN_NUMBER[FastCurve]},
+  {09.05, +1.0, GAIN_NUMBER[Straight]},
+  {11.20, -10.0, GAIN_NUMBER[SlowCurve]},
+  {11.35, +1.0, GAIN_NUMBER[Straight]},
+  {12.55, -10.0, GAIN_NUMBER[Curve]},
+
+  {FINAL_TARGET_POSITION, +0.5, GAIN_NUMBER[Straight]}
+  // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
+};
+
 Mark IRON_2018[] = {
   {00.78, +1.5, GAIN_NUMBER[Straight]},
   {01.2, -2, GAIN_NUMBER[Curve]},
@@ -50,3 +83,5 @@ Mark IRON_2018[] = {
   {FINAL_TARGET_POSITION, +1.5, GAIN_NUMBER[Straight]}
   // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
 };
+
+#endif
