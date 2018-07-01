@@ -6,7 +6,6 @@
 #include "tracks.h"
 // #include "settingsSpeed.h"
 
-
 // Timers
 Timer LogTimer; // Debug the loop
 Timer LapTimer; // Time of a lap
@@ -40,22 +39,6 @@ QEI RightEncoder (PIN_ENC2_A, PIN_ENC2_B, NC, PULSES_PER_REV); // Right Encoder
 float currentPosition; // Robot current position in the track
 float leftDistance; // left distance by encoder (m)
 float rightDistance; // right distance by encoder (m)
-
-float POSITION_FIX; //Robot constante to fix the position.
-
-// Line Reader
-PinName pinsLineReader[NUM_SENSORS] = {
-    PIN_LR_S0, // Most Left Sensor
-    PIN_LR_S1,
-    PIN_LR_S2,
-    PIN_LR_S3,
-    PIN_LR_S4,
-    PIN_LR_S5 // Most Right Sensor
-};
-QTRSensorsAnalog LineReader(pinsLineReader,
-    NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, EMITTER_PIN);
-unsigned int sensorvalues[NUM_SENSORS];
-int linePosition; // line position in the line reader
 
 // Lap sensor settings
 InterruptIn Marksensor1(PIN_TRACK_MARKING_LEFT);
@@ -128,28 +111,6 @@ void setRobotSetup(Setup setup) {
 // The target mark
 Mark TargetMark;
 int currentMark = 0;
-
-// Function to calibrate the line reader
-void lineReaderCalibrate() {
-
-  LOG.printf("%s", "Calibrating sensors...");
-  leds[0] = 1;
-  for (int i = 0; i < 500; i++)
-    LineReader.calibrate(true);
-  leds[0] = 0;
-  LOG.printf("%s\n", "Done.");
-  //
-  // for (int i = 0; i < NUM_SENSORS; i++)
-  //   LOG.printf("Min: %4i \t", LineReader.calibratedMinimumOn[i]);
-  //
-  // LOG.printf("%s", "\n");
-  //
-  // for (int i = 0; i < NUM_SENSORS; i++)
-  //   LOG.printf("Max: %4i \t", LineReader.calibratedMaximumOn[i]);
-
-  // LOG.printf("%s", "\n");
-  // LOG.printf("%s", "\n");
-}
 
 void btcallback() {
   char rcvd = BT.getc();
