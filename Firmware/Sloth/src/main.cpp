@@ -41,6 +41,8 @@ float currentPosition; // Robot current position in the track
 float leftDistance; // left distance by encoder (m)
 float rightDistance; // right distance by encoder (m)
 
+float POSITION_FIX; //Robot constante to fix the position.
+
 // Line Reader
 PinName pinsLineReader[NUM_SENSORS] = {
     PIN_LR_S0, // Most Left Sensor
@@ -56,9 +58,8 @@ unsigned int sensorvalues[NUM_SENSORS];
 int linePosition; // line position in the line reader
 
 // Lap sensor settings
-InterruptIn Marksensor1(PIN_TRACK_MARKING_RIGHT);
-InterruptIn Marksensor2(PIN_TRACK_MARKING_LEFT);
-
+InterruptIn Marksensor1(PIN_TRACK_MARKING_LEFT);
+InterruptIn Marksensor2(PIN_TRACK_MARKING_RIGHT);
   // DigitalIn MarksensorTest(PIN_TRACK_MARKING_LEFT);
 
 // Counters of left and Right sensors
@@ -201,19 +202,21 @@ void btcallback() {
 
 // Interrupt when Mark Left was change
 void ms1() {
+    if(currentMark==0){
+      POSITION_FIX = FIRST_MARK_POSITION - currentPosition;
+    }
     ms1state = !ms1state;
     ms1count++;
     leds[2] = true;
-    LOG.printf("Read ok: %i \n", ms1count);
-
+    LOG.printf("Mark Read: %i \n", ms1count);
 }
 
 //Interrupt when Mark Right was change
 void ms2() {
-    ms2state = !ms1state;
+    ms2state = !ms2state;
     ms2count++;
     leds[3] = true;
-    
+
     // Calculate Travelled Distance by encoders
     // nowEnc = (LeftEncoder.getPulses() + RightEncoder.getPulses()) / 2;
     // deltaEnc = nowEnc - lastReader_enc;
@@ -233,8 +236,8 @@ int main() {
   LOG.printf("%s ", PROJECT_NAME); LOG.printf("%s\n", PROJECT_VERSION);
 
   // Activating Interrupt in fall for the Mark Sensors
-  // Marksensor1.fall(&ms1); //Sensor Right
-  Marksensor2.fall(&ms2); //Sensor Left
+  // Marksensor2.fall(&ms2); //Sensor Right
+  Marksensor1.fall(&ms1); //Sensor Left
 
   // Release motors for make more easy the calibration
   LeftMotor.coast();
@@ -277,9 +280,10 @@ int main() {
   while(1) {
 
     // Get currrent position by encoders and convert to meters
+
     leftDistance = PULSES2DISTANCE(LeftEncoder.getPulses());
     rightDistance = PULSES2DISTANCE(RightEncoder.getPulses());
-    currentPosition = AVG(leftDistance, rightDistance); //get average
+    currentPosition = AVG(leftDistance, rightDistance) + POSITION_FIX; //get average
 
     // Check if the robot complete the track
     if (currentPosition >= FINAL_TARGET_POSITION && STOP_BY_DISTANCE) {
@@ -291,6 +295,9 @@ int main() {
       LapTimer.stop();
       robotstate = false; // Stop the robot
     }
+
+    if (currentMark>0)
+      Marksensor1.disable_irq();
 
     if (!robotstate) { // Stop the Robot
       // Stop the robot and release the motors after
@@ -321,7 +328,6 @@ int main() {
           }
         }
       }
-
     }
 
     else if (robotstate && readyStatus) { // Follow the Line
@@ -369,8 +375,8 @@ int main() {
       righmotorspeed = righmotorspeed > 1.0 ? 1.0 : righmotorspeed < -REVERSE ? -REVERSE : righmotorspeed;
 
       // LOG.printf("PID is working? %f \n", directiongain);
-      LeftMotor.speed(leftmotorspeed);
-      RightMotor.speed(righmotorspeed);
+      // LeftMotor.speed(leftmotorspeed);
+      // RightMotor.speed(righmotorspeed);
 
     // Test Motors
       // LeftMotor.speed(0.5);
@@ -424,7 +430,7 @@ int main() {
       // LOG.printf("CurrentSpeed: %.2f \t", TargetMark.setup.speed);
 
 
-      LOG.printf("%s\n","");
+      // LOG.printf("%s\n","");
       LogTimer.reset();
     }
   }

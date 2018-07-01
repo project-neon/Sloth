@@ -12,7 +12,7 @@
 // Serial DEBUG
 //
 #define LOG_ENABLED true
-#define LOG if(LOG_ENABLED) PC
+#define LOG if(LOG_ENABLED) BT
 #define PC_SPEED  115200
 #define LOG_INTERVAL  0.10 //
 
@@ -56,6 +56,7 @@
 #define ACCELERATION_ENABLED true
 #define ACCELERATION_INTERVAL 0.01
 #define MAPPING_ENABLED true
+#define FIRST_MARK_POSITION 0.5
 
 //
 //Marking Settings
