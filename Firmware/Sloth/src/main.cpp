@@ -56,15 +56,18 @@ unsigned int sensorvalues[NUM_SENSORS];
 int linePosition; // line position in the line reader
 
 // Lap sensor settings
-// InterruptIn Marksensor1(PIN_TRACK_MARKING_RIGHT);
-// InterruptIn Marksensor2(PIN_TRACK_MARKING_LEFT);
+InterruptIn Marksensor1(PIN_TRACK_MARKING_RIGHT);
+InterruptIn Marksensor2(PIN_TRACK_MARKING_LEFT);
+
+  // DigitalIn MarksensorTest(PIN_TRACK_MARKING_LEFT);
 
 // Counters of left and Right sensors
-// bool ms1state = false;
-// bool ms2state = false;
-// int ms1count = 0;
-// int ms2count = 0;
+bool ms1state = false;
+bool ms2state = false;
+int ms1count = 0;
+int ms2count = 0;
 bool robotstate = true;
+bool readyStatus = true;
 
 //PID
 float directiongain = 0.0;
@@ -105,7 +108,13 @@ Setup Stop      = {0.1, 0.000100, 0, 0.000001};
 //
 // Setup Stop      = {0.1, 0.000100, 0, 0.000001};
 
-Setup Normal     = {0.6, 0.00022, 0.000000, 0.0000050};
+
+float speedbase = 0.6;
+float kpdir = 0.00022;
+float kidir = 0.000000;
+float kddir = 0.0000050;
+
+Setup Normal     = {speedbase, kpdir, kidir, kddir};
 
 void setRobotSetup(Setup setup) {
   // Setup PID and Speed
@@ -114,42 +123,6 @@ void setRobotSetup(Setup setup) {
   // If line position is 0, the robot is just over the line
   directioncontrol.setSetPoint(0);
 }
-
-// Mark Struct
-// struct Mark {
-//   float position; // distance in meters
-//   float acceleration; // mark acceleration
-//   Setup setup; // robot setup
-// };
-
-// Mark TRACK_EVENT_NAME[] = { // {Positon, Aceleration, Settings Level} //PS: Aceleration could be positive or negative "break"
-//
-//   {00.78, +1.5, Straight},    //00
-//   {01.2, -2, Curve},
-//   {02.60, +1.0, Straight},
-//   {03.2, -1.0, Curve},
-//   {04.6, +1.0, Straight},  //02
-//   {05.25, -1.0, Curve},    //03
-//   {06.0, +1.0, Straight},   //04
-//   // {06.5, -10, SlowCurve},    //05
-//   //
-//   // {06.8, +1.0, Curve},   //06
-//   {07.25, -1.0, FastCurve},        //07
-//   {08.5, +1.0, Straight},    //08
-//   {08.95, -1.0, FastCurve},    //09
-//   {09.6, +1.0, Straight},    //10
-//   {10.80, -1.0, FastFastCurve},    //11
-//
-//   {11.0, +1.0, Straight},   //12
-//   {11.50, -1.0, Curve},    //13
-//   {11.9, +1.0, Straight},   //14
-//   {12.60, -1, Curve},    //15
-//   //
-//   {13.2, +1.00, FastCurve},   //16
-//
-//   {FINAL_TARGET_POSITION, +1.5, Straight}
-//   // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
-// };
 
 // The target mark
 Mark TargetMark;
@@ -180,69 +153,74 @@ void lineReaderCalibrate() {
 void btcallback() {
   char rcvd = BT.getc();
   switch (rcvd) {
-    // case 'A':
-    //   kpdir += 0.01;
-    //   break;
-    // case 'B':
-    //   kpdir -= 0.01;
-    //   break;
-    // case 'C':
-    //   kidir += 0.0000001;
-    //   break;
-    // case 'D':
-    //   kidir -= 0.0000001;
-    //   break;
-    // case 'E':
-    //   kddir += 0.000001;
-    //   break;
-    // case 'F':
-    //   kddir -= 0.000001;
-    //   break;
-    // case 'G':
-    //   speedbase += 0.01;
-    //   break;
-    // case 'H':
-    //   speedbase -= 0.01;
-    //   break;
+    case 'A':
+      kpdir += 0.01;
+      break;
+    case 'B':
+      kpdir -= 0.01;
+      break;
+    case 'C':
+      kidir += 0.0000001;
+      break;
+    case 'D':
+      kidir -= 0.0000001;
+      break;
+    case 'E':
+      kddir += 0.000001;
+      break;
+    case 'F':
+      kddir -= 0.000001;
+      break;
+    case 'G':
+      speedbase += 0.01;
+      break;
+    case 'H':
+      speedbase -= 0.01;
+      break;
     case 'I':
       robotstate = false;
       break;
     case 'J':
       LOG.printf("Encoder Right Now: %.0f \n", currentPosition);
       break;
+    case 'K':
+      readyStatus = true;
+      // robotstate = true;
+      LOG.printf("Robot will Start in 2s");
+      wait(2);
+      break;
+    case 'L':
+      readyStatus = false;
+      // robotstate = true;
+      LOG.printf("Robot Paused");
+      break;
   }
-  // directioncontrol.setTunings(kpdir, kidir, kddir);
-  // BT.printf("%.8f %.8f %.2f\n", kpdir, kddir, speedbase);
+   directioncontrol.setTunings(kpdir, kidir, kddir);
+   // BT.printf("%.8f %.8f %.2f\n", kpdir, kddir, speedbase);
 }
 
-//Interrupt when Mark Left was change
-// void ms1() {
-//     if (tsafeline > .1) {
-//       tsafeline.reset();
-//       LapTimer.start();
-//       ms1state = !ms1state;
-//       ms1count++;
-//       leds[1] = true; //Debug in led
-//       // Calculate Travelled Distance by encoders
-//       if (ms1count >= CROSS_COUNTER) {
-//           // robotstate = false;
-//           tstop.start();
-//       }
-//     }
-// }
+// Interrupt when Mark Left was change
+void ms1() {
+    ms1state = !ms1state;
+    ms1count++;
+    leds[2] = true;
+    LOG.printf("Read ok: %i \n", ms1count);
 
-// //Interrupt when Mark Right was change
-// void ms2() {
-//     ms2state = !ms1state;
-//     ms2count++;
-//     tsafeline.reset();
-//     leds[1] = true;
-//     // Calculate Travelled Distance by encoders
-//     nowEnc = (LeftEncoder.getPulses() + RightEncoder.getPulses()) / 2;
-//     deltaEnc = nowEnc - lastReader_enc;
-//     lastReader_enc = nowEnc;
-//     BT.printf("Distance: %i %f \n", ms2count, nowEnc);
-// }
+}
+
+//Interrupt when Mark Right was change
+void ms2() {
+    ms2state = !ms1state;
+    ms2count++;
+    leds[3] = true;
+    
+    // Calculate Travelled Distance by encoders
+    // nowEnc = (LeftEncoder.getPulses() + RightEncoder.getPulses()) / 2;
+    // deltaEnc = nowEnc - lastReader_enc;
+    // lastReader_enc = nowEnc;
+    // LOG.printf("Distance: %i %f \n", ms2count, nowEnc);
+    LOG.printf("Read ok: %i \n", ms2count);
+}
 
 int main() {
 
@@ -256,7 +234,7 @@ int main() {
 
   // Activating Interrupt in fall for the Mark Sensors
   // Marksensor1.fall(&ms1); //Sensor Right
-  // Marksensor2.fall(&ms2); //Sensor Left
+  Marksensor2.fall(&ms2); //Sensor Left
 
   // Release motors for make more easy the calibration
   LeftMotor.coast();
@@ -273,8 +251,8 @@ int main() {
   RightEncoder.reset();
 
   // Clear mark sensors counters
-  // ms1count = 0;
-  // ms2count = 0;
+  ms1count = 0;
+  ms2count = 0;
 
   // Start Timers
   LogTimer.start();
@@ -316,12 +294,6 @@ int main() {
 
     if (!robotstate) { // Stop the Robot
       // Stop the robot and release the motors after
-      // wait(.1);
-      // LeftMotor.brake();
-      // RightMotor.brake();
-      // LeftMotor.speed(-1.0);
-      // RightMotor.speed(-1.0);
-      // wait(.1);
       LeftMotor.brake();
       RightMotor.brake();
       wait(.500);
@@ -338,10 +310,6 @@ int main() {
       LOG.printf("Time Lap: %.5f\t", laptime);
       LOG.printf("Track Length: %.2fm\t ", currentPosition);
       LOG.printf("Medium Speed: %.2fm/s\t ",  mediumspeed);
-
-      // Print the robot position only for the first laps
-      LOG.printf("Position: %.2f\t ", currentPosition);
-
       LOG.printf("%s\n", "");
 
       // Blink the LEDs
@@ -356,7 +324,11 @@ int main() {
 
     }
 
-    else { // Follow the Line
+    else if (robotstate && readyStatus) { // Follow the Line
+
+      //LEDS turn off - About Interrupt
+      leds[2]=0;
+      leds[3]=0;
 
       // Check if changed mark
       if (currentPosition >= TargetMark.position && MAPPING_ENABLED) {
@@ -399,6 +371,20 @@ int main() {
       // LOG.printf("PID is working? %f \n", directiongain);
       LeftMotor.speed(leftmotorspeed);
       RightMotor.speed(righmotorspeed);
+
+    // Test Motors
+      // LeftMotor.speed(0.5);
+      // RightMotor.speed(0.5);
+      // wait(2);
+      // LeftMotor.brake();
+      // RightMotor.brake();
+      // wait(2);
+      // LeftMotor.speed(-0.5);
+      // RightMotor.speed(-0.5);
+      // wait(2);
+      // LeftMotor.brake();
+      // RightMotor.brake();
+      // wait(2);
     }
 
     if (LogTimer.read() > LOG_INTERVAL && LOG_ENABLED) {
@@ -408,8 +394,11 @@ int main() {
 
       // Certifies correct operation of line sensors
       // LineReader.read(sensorvalues, QTR_EMITTERS_ON);
-       // for (int i = 0; i < 6; i++)
-        // LOG.printf("%i \t", sensorvalues[i]);
+      //  for (int i = 0; i < 6; i++)
+      //   LOG.printf("%i \t", sensorvalues[i]);
+      // LOG.printf("Line: %i \t", linePosition);
+
+      // LOG.printf("Mark: %i \t", MarksensorTest.read());
 
 
      // Certifies correct operation of encoders
@@ -420,14 +409,19 @@ int main() {
 
      // Certifies correct operation of motors
      // LOG.printf("PID is working? %f \n", directiongain);
-     // LOG.printf("%.2f\t", leftmotorspeed)
-     // LOG.printf("%.2f\t", rightmotorspeed)
+     // LOG.printf("%.2f\t", leftmotorspeed);
+     // LOG.printf("%.2f\t", righmotorspeed);
 
       // Manual Track Mapping
       // LOG.printf("%.2f ", LapTimer.read());
       // LOG.printf("Line: %i \t", linePosition);
       // LOG.printf("%.4f,", currentPosition);
       // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
+
+      //Test of Mapping
+      // LOG.printf("CurrentPosition: %.2f \t", currentPosition);
+      // LOG.printf("CurrentMark: %i \t", currentMark);
+      // LOG.printf("CurrentSpeed: %.2f \t", TargetMark.setup.speed);
 
 
       LOG.printf("%s\n","");

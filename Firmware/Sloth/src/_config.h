@@ -12,9 +12,9 @@
 // Serial DEBUG
 //
 #define LOG_ENABLED true
-#define LOG if(LOG_ENABLED) BT
+#define LOG if(LOG_ENABLED) PC
 #define PC_SPEED  115200
-#define LOG_INTERVAL  0.01 //
+#define LOG_INTERVAL  0.10 //
 
 //
 // Bluetooth Configs (Type here)
@@ -41,16 +41,17 @@
 //Lap Sensor Settings
 //
 #define CROSS_COUNTER 6
-#define PIN_TRACK_MARKING_RIGHT p13
 #define PIN_TRACK_MARKING_LEFT  p12
+#define PIN_TRACK_MARKING_RIGHT p13
+
 
 //
 // General Settings
 //
 #define STOP_BY_TIME false
-#define LAP_TIME 20
+#define LAP_TIME 20 //in seconds
 #define STOP_BY_DISTANCE true
-#define FINAL_TARGET_POSITION   14.0
+#define FINAL_TARGET_POSITION   13  // in meters
 // #define FINAL_TARGET_POSITION   1.5
 #define ACCELERATION_ENABLED true
 #define ACCELERATION_INTERVAL 0.01
@@ -96,7 +97,7 @@
 #define Straight  3
 #define Stop      4
 
-#define TRACK_EVENT_NAME SMILE_2018
-#define GAIN_NUMBER k0
+#define TRACK_EVENT_NAME HACKPULICA
+#define GAIN_NUMBER k1
 
 #endif
