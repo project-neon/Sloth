@@ -30,5 +30,5 @@ int LineReader::getValue(int index) {
 
 float LineReader::getPosition() {
   // Position of the line: (left)-2500 to 2500(right)
-  return (float) (QTRSensor.readLine(values, QTR_EMITTERS_ON, WHITE_LINE) - 2500.0);
+  return (float) ((QTRSensor.readLine(values, QTR_EMITTERS_ON, WHITE_LINE) - 2500.0)/2500);
 }

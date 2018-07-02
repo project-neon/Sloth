@@ -197,8 +197,6 @@ int main() {
   PC.baud(PC_SPEED);
   BT.baud(BT_SPEED);
   BT.attach(&btcallback);
-  PC.printf("%s ", PROJECT_NAME); PC.printf("%s\n", PROJECT_VERSION);
-  BT.printf("%s ", PROJECT_NAME); BT.printf("%s\n", PROJECT_VERSION);
   LOG.printf("%s ", PROJECT_NAME); LOG.printf("%s\n", PROJECT_VERSION);
 
   // Activating Interrupt in fall for the Mark Sensors
@@ -367,9 +365,10 @@ int main() {
 
       // Certifies correct operation of line sensors
       // LineReader.read(sensorvalues, QTR_EMITTERS_ON);
-      //  for (int i = 0; i < 6; i++)
-      //   LOG.printf("%i \t", sensorvalues[i]);
-      LOG.printf("Line: %i \t", linePosition);
+       for (int i = 0; i < 6; i++)
+        LOG.printf("%i \t", LineReader::getValue(i));
+
+      LOG.printf("Line: %f \t", linePosition);
 
       // LOG.printf("Mark: %i \t", MarksensorTest.read());
 
