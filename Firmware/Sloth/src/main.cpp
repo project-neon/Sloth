@@ -231,8 +231,6 @@ int main() {
   PC.baud(PC_SPEED);
   BT.baud(BT_SPEED);
   BT.attach(&btcallback);
-  PC.printf("%s ", PROJECT_NAME); PC.printf("%s\n", PROJECT_VERSION);
-  BT.printf("%s ", PROJECT_NAME); BT.printf("%s\n", PROJECT_VERSION);
   LOG.printf("%s ", PROJECT_NAME); LOG.printf("%s\n", PROJECT_VERSION);
 
   // Activating Interrupt in fall for the Mark Sensors
