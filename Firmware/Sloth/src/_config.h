@@ -12,7 +12,7 @@
 // Serial DEBUG
 //
 #define LOG_ENABLED true
-#define LOG if(LOG_ENABLED) BT
+#define LOG if(LOG_ENABLED) PC
 #define PC_SPEED  115200
 #define LOG_INTERVAL  0.10 //
 

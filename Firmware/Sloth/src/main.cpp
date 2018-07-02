@@ -4,6 +4,8 @@
 #include "QEI.h"
 #include "_config.h"
 #include "tracks.h"
+#include "LineReader.h"
+
 // #include "settingsSpeed.h"
 
 // Timers
@@ -24,6 +26,8 @@ DigitalOut leds[4] = {
     LED4
 };
 
+//Line Sensors
+float linePosition =0;
 // Motors
 Motor LeftMotor(PIN_M1_EN, PIN_M1_IN1, PIN_M1_IN2); // Lefut Motor
 Motor RightMotor(PIN_M2_EN, PIN_M2_IN1, PIN_M2_IN2); // Right Motor
@@ -111,6 +115,7 @@ void setRobotSetup(Setup setup) {
 // The target mark
 Mark TargetMark;
 int currentMark = 0;
+float POSITION_FIX =0;
 
 void btcallback() {
   char rcvd = BT.getc();
@@ -206,8 +211,9 @@ int main() {
 
   // Calibrate the line sensor
   wait(2);
-  lineReaderCalibrate();
-  LOG.printf("%s\n", "Sensors Calibrated");
+  LOG.printf("%s", "Calibrating the Line Sensors... ");
+  LineReader::calibrate(500);
+  LOG.printf("%s\n", "done!");
   wait(4);
 
   // Reset Encoders
@@ -307,8 +313,8 @@ int main() {
         setRobotSetup(TargetMark.setup);
       }
 
-      // Position of the line: (left)-2500 to 2500(right)
-      linePosition = LineReader.readLine(sensorvalues, QTR_EMITTERS_ON, WHITE_LINE) - 2500.0;
+      // Position of the line: (left)-1.0 to 1.0(right)
+      linePosition = LineReader::getPosition();
 
       directioncontrol.setProcessValue(linePosition);
       directiongain = directioncontrol.compute();
@@ -363,7 +369,7 @@ int main() {
       // LineReader.read(sensorvalues, QTR_EMITTERS_ON);
       //  for (int i = 0; i < 6; i++)
       //   LOG.printf("%i \t", sensorvalues[i]);
-      // LOG.printf("Line: %i \t", linePosition);
+      LOG.printf("Line: %i \t", linePosition);
 
       // LOG.printf("Mark: %i \t", MarksensorTest.read());
 
@@ -391,7 +397,7 @@ int main() {
       // LOG.printf("CurrentSpeed: %.2f \t", TargetMark.setup.speed);
 
 
-      // LOG.printf("%s\n","");
+      LOG.printf("%s\n","");
       LogTimer.reset();
     }
   }

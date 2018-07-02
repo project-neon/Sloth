@@ -6,25 +6,11 @@
 
 class LineReader {
 public:
-  static void calibrate();
+  static void calibrate(int nsamples = 100);
   static float getPosition();
   static int getValue(int index);
 
-private:
-  // Line Reader
-  PinName pins[NUM_SENSORS] = {
-      PIN_LR_S0, // Most Left Sensor
-      PIN_LR_S1,
-      PIN_LR_S2,
-      PIN_LR_S3,
-      PIN_LR_S4,
-      PIN_LR_S5 // Most Right Sensor
-  };
 
-  QTRSensorsAnalog QTRSensor(pins,
-      NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, EMITTER_PIN);
-
-  unsigned int values[NUM_SENSORS];
 };
 
 #endif
