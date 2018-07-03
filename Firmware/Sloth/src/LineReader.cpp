@@ -4,7 +4,7 @@
 #include "LineReader.h"
 
 // Line Reader
-PinName pins[NUM_SENSORS] = {
+static PinName pins[NUM_SENSORS] = {
     PIN_LR_S0, // Most Left Sensor
     PIN_LR_S1,
     PIN_LR_S2,
@@ -13,10 +13,11 @@ PinName pins[NUM_SENSORS] = {
     PIN_LR_S5 // Most Right Sensor
 };
 
-QTRSensorsAnalog QTRSensor(pins,
+static QTRSensorsAnalog QTRSensor(pins,
     NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, EMITTER_PIN);
 
-unsigned int values[NUM_SENSORS];
+static unsigned int values[NUM_SENSORS];
+
 // Function to calibrate the sensors
 void LineReader::calibrate(int nsamples) {
   for (int i = 0; i < nsamples; i++)

@@ -14,6 +14,16 @@ Timer LogTimer; // Debug the loop
 Timer LapTimer; // Time of a lap
 Timer AccTimer; // Acceleration interval
 
+// Robot status variables
+// position reference by the travelled distance in meters
+float travelled_distance;
+// position of the sensor on the line[-1,1]
+float line_position;
+// position reference by the checkpoint marks in the track
+int current_checkpoint;
+// current target speed
+float target_speed;
+
 // Serial
 //Control the Communication with a Computer (Serial) and HC-05
 Serial PC(USBTX, USBRX);
@@ -27,8 +37,6 @@ DigitalOut leds[4] = {
     LED4
 };
 
-//Line Sensors
-float linePosition =0;
 // Motors
 Motor LeftMotor(PIN_M1_EN, PIN_M1_IN1, PIN_M1_IN2); // Lefut Motor
 Motor RightMotor(PIN_M2_EN, PIN_M2_IN1, PIN_M2_IN2); // Right Motor
@@ -61,7 +69,7 @@ float kpdir = 0.00022;
 float kidir = 0.000000;
 float kddir = 0.0000050;
 
-Setup Normal     = {speedbase, kpdir, kidir, kddir};
+Setup Normal = {speedbase, kpdir, kidir, kddir};
 
 void setRobotSetup(Setup setup) {
   // Setup PID and Speed
@@ -107,7 +115,7 @@ void btcallback() {
       robotstate = false;
       break;
     case 'J':
-      LOG.printf("Encoder Right Now: %.0f \n", currentPosition);
+      LOG.printf("Encoder Right Now: %.0f \n", travelled_distance);
       break;
     case 'K':
       readyStatus = true;
@@ -128,7 +136,7 @@ void btcallback() {
 // Interrupt when Mark Left was change
 void ms1() {
     if(currentMark==0){
-      POSITION_FIX = FIRST_MARK_POSITION - currentPosition;
+      POSITION_FIX = FIRST_MARK_POSITION - travelled_distance;
     }
     ms1state = !ms1state;
     ms1count++;
@@ -174,8 +182,7 @@ int main() {
   wait(4);
 
   // Reset Encoders
-  LeftEncoder.reset();
-  RightEncoder.reset();
+  DistanceReader::reset();
 
   // Clear mark sensors counters
   ms1count = 0;
@@ -203,11 +210,11 @@ int main() {
   // Main Loop
   while(1) {
 
-    // Get currrent position by encoders and convert to meters
-
+    // Get the currrent travelled distance in meters
+    float travelled_distance = DistanceReader::getDistance();
 
     // Check if the robot complete the track
-    if (currentPosition >= FINAL_TARGET_POSITION && STOP_BY_DISTANCE) {
+    if (travelled_distance >= FINAL_TARGET_POSITION && STOP_BY_DISTANCE) {
       robotstate = false; // Stop the Robot
     }
 
@@ -233,10 +240,9 @@ int main() {
 
       // Print some data for statistics
       float laptime = LapTimer.read();
-      // float tracklength = (currentPosition / PULSES_PER_REV) * WHEEL_PERIMETER;
-      float mediumspeed = currentPosition / laptime;
+      float mediumspeed = travelled_distance / laptime;
       LOG.printf("Time Lap: %.5f\t", laptime);
-      LOG.printf("Track Length: %.2fm\t ", currentPosition);
+      LOG.printf("Track Length: %.2fm\t ", travelled_distance);
       LOG.printf("Medium Speed: %.2fm/s\t ",  mediumspeed);
       LOG.printf("%s\n", "");
 
@@ -258,7 +264,7 @@ int main() {
       leds[3]=0;
 
       // Check if changed mark
-      if (currentPosition >= TargetMark.position && MAPPING_ENABLED) {
+      if (travelled_distance >= TargetMark.position && MAPPING_ENABLED) {
         currentMark++;
         // Get current Target Mark
         TargetMark = TRACK_EVENT_NAME[currentMark];
@@ -268,9 +274,9 @@ int main() {
       }
 
       // Position of the line: (left)-1.0 to 1.0(right)
-      linePosition = LineReader::getPosition();
+      line_position = LineReader::getPosition();
 
-      directioncontrol.setProcessValue(linePosition);
+      directioncontrol.setProcessValue(line_position);
       directiongain = directioncontrol.compute();
 
       // Speed update with acceleration
@@ -315,7 +321,7 @@ int main() {
     }
 
     if (LogTimer.read() > LOG_INTERVAL && LOG_ENABLED) {
-      // LOG.printf("%i\t", currentPosition);
+      // LOG.printf("%i\t", travelled_distance);
       // LOG.printf("%i\t", TargetMark.position);
       // LOG.printf("%i\t", currentMark);
 
@@ -324,7 +330,7 @@ int main() {
        for (int i = 0; i < 6; i++)
         LOG.printf("%i \t", LineReader::getValue(i));
 
-      LOG.printf("Line: %f \t", linePosition);
+      LOG.printf("Line: %f \t", line_position);
 
       // LOG.printf("Mark: %i \t", MarksensorTest.read());
 
@@ -342,12 +348,12 @@ int main() {
 
       // Manual Track Mapping
       // LOG.printf("%.2f ", LapTimer.read());
-      // LOG.printf("Line: %i \t", linePosition);
-      // LOG.printf("%.4f,", currentPosition);
+      // LOG.printf("Line: %i \t", line_position);
+      // LOG.printf("%.4f,", travelled_distance);
       // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
 
       //Test of Mapping
-      // LOG.printf("CurrentPosition: %.2f \t", currentPosition);
+      // LOG.printf("CurrentPosition: %.2f \t", travelled_distance);
       // LOG.printf("CurrentMark: %i \t", currentMark);
       // LOG.printf("CurrentSpeed: %.2f \t", TargetMark.setup.speed);
 

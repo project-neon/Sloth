@@ -1,6 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
-#include "mbed.h"
+// #include "mbed.h"
 
 //
 // Project
@@ -65,7 +65,7 @@
 //
 // Motors config (H-Bridge)
 //
-#define REVERSE	0.00
+#define REVERSE	    0.00
 #define PIN_M2_EN   p21
 #define PIN_M2_IN1  p22
 #define PIN_M2_IN2  p23
@@ -76,18 +76,15 @@
 //
 // Encoder config (Quadrature)
 //
-#define PULSES_PER_REV 179.0 // 30:1
+#define PULSES_PER_REV 179 // 30:1
 // #define PULSES_PER_REV 61.0 // 10:1
 #define PIN_ENC1_A  p27
 #define PIN_ENC1_B	p28
 #define PIN_ENC2_A	p30
 #define PIN_ENC2_B	p29
 //#define M_PI 3.14159
-#define WHEEL_RADIUS 0.016	// D = 32mm
-#define WHEEL_PERIMETER	(2.0*WHEEL_RADIUS*M_PI)	// WHEEL_RADIUS * PI
-#define PULSES2DISTANCE(p) (p / PULSES_PER_REV * WHEEL_PERIMETER)
-#define AVG(l,r) ((l + r) / 2.0)
-#define DIF(l,r) (r - l)
+#define WHEEL_RADIUS 0.016f	// D = 32mm
+
 //
 // Pulses to Distance
 //
