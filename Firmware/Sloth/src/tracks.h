@@ -39,7 +39,7 @@ Mark TEST[] = { // Distance in meters, Aceleration, Constants of gain (PID)
 };
 
 Mark HACKPULICA[] = { // Distance in meters, Aceleration, Constants of gain (PID)
-  {00.75, +1.0, GAIN_NUMBER[Straight]},
+  {00.78, +1.0, GAIN_NUMBER[Straight]},
   {01.35, -10.0, GAIN_NUMBER[SlowCurve]},
   {01.60, +1.0, GAIN_NUMBER[Straight]},
   {02.10, -10.0, GAIN_NUMBER[Curve]},

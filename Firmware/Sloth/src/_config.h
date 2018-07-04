@@ -12,7 +12,7 @@
 // Serial DEBUG
 //
 #define LOG_ENABLED true
-#define LOG if(LOG_ENABLED) PC
+#define LOG if(LOG_ENABLED) BT
 #define PC_SPEED  115200
 #define LOG_INTERVAL  0.10 //
 
@@ -51,11 +51,11 @@
 #define STOP_BY_TIME false
 #define LAP_TIME 20 //in seconds
 #define STOP_BY_DISTANCE true
-#define FINAL_TARGET_POSITION   13  // in meters
+#define FINAL_TARGET_POSITION   11.9  // in meters
 // #define FINAL_TARGET_POSITION   1.5
 #define ACCELERATION_ENABLED true
 #define ACCELERATION_INTERVAL 0.01
-#define MAPPING_ENABLED true
+#define MAPPING_ENABLED false
 #define FIRST_MARK_POSITION 0.5
 
 //
