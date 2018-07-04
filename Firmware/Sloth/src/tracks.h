@@ -38,7 +38,7 @@ Mark TEST[] = { // Distance in meters, Aceleration, Constants of gain (PID)
   // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
 };
 
-Mark HACKPULICA[] = { // Distance in meters, Aceleration, Constants of gain (PID)
+Mark HACKPULICA_OLD[] = { // Distance in meters, Aceleration, Constants of gain (PID)
   {00.78, +1.0, GAIN_NUMBER[Straight]},
   {01.35, -10.0, GAIN_NUMBER[SlowCurve]},
   {01.60, +1.0, GAIN_NUMBER[Straight]},
@@ -59,6 +59,28 @@ Mark HACKPULICA[] = { // Distance in meters, Aceleration, Constants of gain (PID
 
   {FINAL_TARGET_POSITION, +0.5, GAIN_NUMBER[Straight]}
   // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
+};
+
+Mark HACKPULICA[] = { // Distance in meters, Aceleration, Constants of gain (PID)
+  {00.15, +1.0, GAIN_NUMBER[Straight]},
+  {00.75, -10.0, GAIN_NUMBER[SlowCurve]},
+  {01.10, +0.5, GAIN_NUMBER[Straight]},
+  {01.45, -10.0, GAIN_NUMBER[Curve]},
+  {01.85, +0.5, GAIN_NUMBER[Straight]},
+  {02.40, -10.0, GAIN_NUMBER[Curve]},
+  {02.85, +1.0, GAIN_NUMBER[Straight]},
+  {03.40, -10.0, GAIN_NUMBER[Curve]},
+  {03.80, +0.5, GAIN_NUMBER[Straight]},
+  {04.75, -10.0, GAIN_NUMBER[Curve]},
+  {05.95, +0.5, GAIN_NUMBER[Straight]},
+  {07.25, -10.0, GAIN_NUMBER[Curve]},
+  {08.15, +1.0, GAIN_NUMBER[FastCurve]},
+  {08.40, +1.0, GAIN_NUMBER[Straight]},
+  {10.20, -10.0, GAIN_NUMBER[SlowCurve]},
+  {10.70, +1.0, GAIN_NUMBER[Straight]},
+  {11.6, -10.0, GAIN_NUMBER[Curve]},
+
+  {FINAL_TARGET_POSITION, +0.5, GAIN_NUMBER[Straight]}
 };
 
 Mark IRON_2018[] = {
