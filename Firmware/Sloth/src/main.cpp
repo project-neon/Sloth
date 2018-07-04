@@ -60,15 +60,13 @@ unsigned int sensorvalues[NUM_SENSORS];
 int linePosition; // line position in the line reader
 
 // Lap sensor settings
-InterruptIn Marksensor1(PIN_TRACK_MARKING_LEFT);
-InterruptIn Marksensor2(PIN_TRACK_MARKING_RIGHT);
-  // DigitalIn MarksensorTest(PIN_TRACK_MARKING_LEFT);
+InterruptIn CheckpointSensorRight(PIN_TRACK_MARKING_RIGHT);
+InterruptIn CheckpointSensorLeft(PIN_TRACK_MARKING_LEFT);
 
 // Counters of left and Right sensors
-bool ms1state = false;
-bool ms2state = false;
-int ms1count = 0;
-int ms2count = 0;
+int checkpoint_left_counter = 0;
+int checkpoint_right_counter = 0;
+
 bool robotstate = true;
 bool readyStatus = true;
 
@@ -112,7 +110,7 @@ Setup Stop      = {0.1, 0.000100, 0, 0.000001};
 // Setup Stop      = {0.1, 0.000100, 0, 0.000001};
 
 
-float speedbase = 0.35;
+float speedbase = 0.30;
 float kpdir = 0.00020;
 float kidir = 0.000000;
 float kddir = 0.0000035;
@@ -203,18 +201,14 @@ void btcallback() {
 }
 
 // Interrupt when Mark Left was change
-void ms1() {
-    if (currentMark == 0 && firstMarkDone == false){
-      // POSITION_FIX = FIRST_MARK_POSITION - currentPosition;
-      // firstMarkDone = true;
-    }
-    ms1count++;
+void checkpointSensorLeftCallback() {
+    checkpoint_left_counter++;
     leds[2] = true;
 }
 
 //Interrupt when Mark Right was change
-void ms2() {
-    ms2count++;
+void checkpointSensorRightCallback() {
+    checkpoint_right_counter++;
     leds[3] = true;
 }
 
@@ -225,10 +219,6 @@ int main() {
   BT.baud(BT_SPEED);
   BT.attach(&btcallback);
   LOG.printf("%s ", PROJECT_NAME); LOG.printf("%s\n", PROJECT_VERSION);
-
-  // Activating Interrupt in fall for the Mark Sensors
-  // Marksensor2.fall(&ms2); //Sensor Right
-  Marksensor1.fall(&ms1); //Sensor Left
 
   // Release motors for make more easy the calibration
   LeftMotor.coast();
@@ -244,9 +234,13 @@ int main() {
   LeftEncoder.reset();
   RightEncoder.reset();
 
+  // Activating Interrupt in fall for the Mark Sensors
+  CheckpointSensorRight.fall(&checkpointSensorRightCallback);
+  CheckpointSensorLeft.fall(&checkpointSensorLeftCallback);
+
   // Clear mark sensors counters
-  ms1count = 0;
-  ms2count = 0;
+  checkpoint_left_counter = 0;
+  checkpoint_right_counter = 0;
 
   // Start Timers
   LogTimer.start();
@@ -272,7 +266,7 @@ int main() {
 
     // Get currrent position by encoders and convert to meters
 
-    if (ms1count == 0) {
+    if (checkpoint_right_counter == 0) {
       LeftEncoder.reset();
       RightEncoder.reset();
     }
@@ -293,7 +287,7 @@ int main() {
     }
 
     // if (currentMark>0)
-    //   Marksensor1.disable_irq();
+    //   CheckpointSensorRight.disable_irq();
 
     if (!robotstate) { // Stop the Robot
       // Stop the robot and release the motors after
@@ -308,7 +302,6 @@ int main() {
 
       // Print some data for statistics
       float laptime = LapTimer.read();
-      // float tracklength = (currentPosition / PULSES_PER_REV) * WHEEL_PERIMETER;
       float mediumspeed = currentPosition / laptime;
       LOG.printf("Time Lap: %.5f\t", laptime);
       LOG.printf("Track Length: %.2fm\t ", currentPosition);
@@ -415,18 +408,19 @@ int main() {
      // LOG.printf("%.2f\t", righmotorspeed);
 
       // Manual Track Mapping
-      LOG.printf("%.2f,", LapTimer.read());
-      LOG.printf("%i,", linePosition);
-      LOG.printf("%.4f,", currentPosition);
-      LOG.printf("%.4f,", DIF(leftDistance, rightDistance));
-      LOG.printf("%i", ms1count);
+      // LOG.printf("%.2f,", LapTimer.read());
+      // LOG.printf("%i,", currentMark);
+      // LOG.printf("%i", linePosition);
+      // LOG.printf("%.4f,", currentPosition);
+      // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
+      // LOG.printf("%i,", checkpoint_left_counter);
+      // LOG.printf("%i", checkpoint_right_counter);
 
       //Test of Mapping
       // LOG.printf("CurrentPosition: %.2f \t", currentPosition);
-      // LOG.printf("CurrentMark: %i \t", currentMark);
       // LOG.printf("CurrentSpeed: %.2f \t", TargetMark.setup.speed);
 
-      LOG.printf("%s\n","");
+      // LOG.printf("%s\n","");
       LogTimer.reset();
     }
   }
