@@ -17,6 +17,9 @@ Timer AccTimer; // Acceleration interval
 Serial PC(USBTX, USBRX);
 Serial BT(BTRX, BTTX);
 
+char  receivedxBuf[RX_MAX];
+int rcvdNow=0;
+
 // Leds
 DigitalOut leds[4] = {
     LED1,
@@ -116,53 +119,62 @@ void lineReaderCalibrate() {
   // LOG.printf("%s", "\n");
 }
 
+void communicationAction(char rcvd[ ]){
+  BT.printf("%s\n", rcvd);
+}
+
 void btcallback() {
-  char rcvd = BT.getc();
-  switch (rcvd) {
-    case 'A':
-      kpdir += 0.01;
-      break;
-    case 'B':
-      kpdir -= 0.01;
-      break;
-    case 'C':
-      kidir += 0.0000001;
-      break;
-    case 'D':
-      kidir -= 0.0000001;
-      break;
-    case 'E':
-      kddir += 0.000001;
-      break;
-    case 'F':
-      kddir -= 0.000001;
-      break;
-    case 'G':
-      speedbase += 0.01;
-      break;
-    case 'H':
-      speedbase -= 0.01;
-      break;
-    case 'I':
-      robotstate = false;
-      break;
-    case 'J':
-      LOG.printf("Encoder Right Now: %.0f \n", currentPosition);
-      break;
-    case 'K':
-      readyStatus = true;
-      // robotstate = true;
-      LOG.printf("Robot will Start in 2s");
-      wait(2);
-      break;
-    case 'L':
-      readyStatus = false;
-      // robotstate = true;
-      LOG.printf("Robot Paused");
-      break;
+  while(BT.readable() && rcvdNow < RX_MAX){
+    receivedxBuf[rcvdNow++] = BT.getc();
   }
-   directioncontrol.setTunings(kpdir, kidir, kddir);
-   // BT.printf("%.8f %.8f %.2f\n", kpdir, kddir, speedbase);
+  communicationAction(receivedxBuf);
+
+  // char rcvd = BT.getc();
+  // switch (rcvd) {
+  //   case 'A':
+  //     kpdir += 0.01;
+  //     break;
+  //   case 'B':
+  //     kpdir -= 0.01;
+  //     break;
+  //   case 'C':
+  //     kidir += 0.0000001;
+  //     break;
+  //   case 'D':
+  //     kidir -= 0.0000001;
+  //     break;
+  //   case 'E':
+  //     kddir += 0.000001;
+  //     break;
+  //   case 'F':
+  //     kddir -= 0.000001;
+  //     break;
+  //   case 'G':
+  //     speedbase += 0.01;
+  //     break;
+  //   case 'H':
+  //     speedbase -= 0.01;
+  //     break;
+  //   case 'I':
+  //     robotstate = false;
+  //     break;
+  //   case 'J':
+  //     LOG.printf("Encoder Right Now: %.0f \n", currentPosition);
+  //     break;
+  //   case 'K':
+  //     readyStatus = true;
+  //     // robotstate = true;
+  //     LOG.printf("Robot will Start in 2s");
+  //     wait(2);
+  //     break;
+  //   case 'L':
+  //     readyStatus = false;
+  //     // robotstate = true;
+  //     LOG.printf("Robot Paused");
+  //     break;
+  // }
+  //  directioncontrol.setTunings(kpdir, kidir, kddir);
+  //  // BT.printf("%.8f %.8f %.2f\n", kpdir, kddir, speedbase);
 }
 
 // Interrupt when Mark Left was change
@@ -229,6 +241,7 @@ int main() {
   // Main Loop
   while(1) {
 
+    rcvdNow=0;
     // Get currrent position by encoders and convert to meters
 
     if (checkpoint_right_counter == 0) {
@@ -329,8 +342,8 @@ int main() {
       righmotorspeed = righmotorspeed > 1.0 ? 1.0 : righmotorspeed < -REVERSE ? -REVERSE : righmotorspeed;
 
       // LOG.printf("PID is working? %f \n", directiongain);
-      LeftMotor.speed(leftmotorspeed);
-      RightMotor.speed(righmotorspeed);
+      // LeftMotor.speed(leftmotorspeed);
+      // RightMotor.speed(righmotorspeed);
 
     // Test Motors
       // LeftMotor.speed(0.5);
