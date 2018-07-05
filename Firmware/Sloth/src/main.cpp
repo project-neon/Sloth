@@ -74,51 +74,22 @@ int crossroad_counter = 0;
 
 bool robotstate = true;
 bool readyStatus = true;
+bool motorsEnable=true;
 
 //PID
 float directiongain = 0.0;
 PID directioncontrol(0, 0, 0);
 
-// Robot Setups
-// struct Setup {
-//   float speed;
-//   float kp;
-//   float ki;
-//   float kd;
-// };
 
-// Robot Standard Setups
-                // Speed,   kP,   kI,   kD
-// Setup Curve     = {0.85, 0.00030, 0.0000000, 0.0000075};
+// float speedbase = 0.30;
+// float kpdir = 0.00020;
+// float kidir = 0.000000;
+// float kddir = 0.0000035;
 
-/* MOTOR 10:1
-Setup SlowCurve = {0.3, 0.0020000, 0.000000, 0.000200};
-
-Setup Curve     = {0.4, 0.00020000, 0.000000, 0.000020};
-
-Setup Straight  = {1.0, 0.00030000, 0.000000, 0.00001};
-Setup FastCurve     = {0.4, 0.00020000, 0.000000, 0.000020};
-
-Setup Stop      = {0.1, 0.000100, 0, 0.000001};
-*/
-
-// MOTOR 30:1
-// Setup SlowCurve = {0.62, 0.00025000, 0.000000, 0.0000050};
-//
-// Setup Curve     = {0.6, 0.00022, 0.000000, 0.0000050};
-//
-// Setup Straight  = {1.0, 0.00018, 0.000000, 0.0000075};
-//
-// Setup FastCurve = {0.7, 0.00022, 0.000000, 0.0000075};
-// Setup FastFastCurve = {0.95, 0.00022, 0.000000, 0.0000075};
-//
-// Setup Stop      = {0.1, 0.000100, 0, 0.000001};
-
-
-float speedbase = 0.30;
-float kpdir = 0.00020;
+float speedbase = 0.75;
+float kpdir = 0.00025;
 float kidir = 0.000000;
-float kddir = 0.0000035;
+float kddir = 0.0000050;
 
 Setup Normal     = {speedbase, kpdir, kidir, kddir};
 
@@ -137,12 +108,14 @@ int currentMark = 0;
 // Function to calibrate the line reader
 void lineReaderCalibrate() {
 
-  LOG.printf("%s", "Calibrating sensors...");
+  PC.printf("%s", "Calibrating sensors...");
+  BT.printf("%s", "Calibrating sensors...");
   leds[0] = 1;
   for (int i = 0; i < 500; i++)
     LineReader.calibrate(true);
   leds[0] = 0;
-  LOG.printf("%s\n", "Done.");
+  BT.printf("%s\n", "Done.");
+  PC.printf("%s\n", "Done.");
   //
   // for (int i = 0; i < NUM_SENSORS; i++)
   //   LOG.printf("Min: %4i \t", LineReader.calibratedMinimumOn[i]);
@@ -177,32 +150,41 @@ void btcallback() {
     case 'F':
       kddir -= 0.000001;
       break;
-    case 'G':
+    case 'u':
       speedbase += 0.01;
       break;
-    case 'H':
+    case 'd':
       speedbase -= 0.01;
       break;
-    case 'I':
-      robotstate = false;
-      break;
+    // case 'S':
+    //   robotstate = false;
+    //   break;
     case 'J':
-      LOG.printf("Encoder Right Now: %.0f \n", currentPosition);
+      PC.printf("Encoder Right Now: %.0f \n", currentPosition);
+      BT.printf("Encoder Right Now: %.0f \n", currentPosition);
       break;
-    case 'K':
-      readyStatus = true;
+    case 'G':
+      robotstate = true;
       // robotstate = true;
-      LOG.printf("Robot will Start in 2s");
+      PC.printf("Robot will Start in 2s");
+      BT.printf("Robot will Start in 2s");
       wait(2);
       break;
-    case 'L':
-      readyStatus = false;
+    case 'S':
+      robotstate = false;
       // robotstate = true;
-      LOG.printf("Robot Paused");
+      PC.printf("Robot Paused");
+      BT.printf("Robot Paused");
+      break;
+    case 'M':
+      motorsEnable = !motorsEnable;
+      // robotstate = true;
+      PC.printf("Motors state changed");
+      BT.printf("Motors state changed");
       break;
   }
    directioncontrol.setTunings(kpdir, kidir, kddir);
-   // BT.printf("%.8f %.8f %.2f\n", kpdir, kddir, speedbase);
+   BT.printf("%.8f %.8f %.2f\n", kpdir, kddir, speedbase);
 }
 
 // Interrupt when Mark Left was change
@@ -225,7 +207,8 @@ int main() {
   PC.baud(PC_SPEED);
   BT.baud(BT_SPEED);
   BT.attach(&btcallback);
-  LOG.printf("%s ", PROJECT_NAME); LOG.printf("%s\n", PROJECT_VERSION);
+  BT.printf("%s ", PROJECT_NAME); LOG.printf("%s\n", PROJECT_VERSION);
+  PC.printf("%s ", PROJECT_NAME); LOG.printf("%s\n", PROJECT_VERSION);
 
   // Release motors for make more easy the calibration
   LeftMotor.coast();
@@ -234,7 +217,6 @@ int main() {
   // Calibrate the line sensor
   wait(2);
   lineReaderCalibrate();
-  LOG.printf("%s\n", "Sensors Calibrated");
   wait(4);
 
   // Reset Encoders
@@ -310,13 +292,18 @@ int main() {
       // Print some data for statistics
       float laptime = LapTimer.read();
       float mediumspeed = currentPosition / laptime;
-      LOG.printf("Time Lap: %.5f\t", laptime);
-      LOG.printf("Track Length: %.2fm\t ", currentPosition);
-      LOG.printf("Medium Speed: %.2fm/s\t ",  mediumspeed);
-      LOG.printf("%s\n", "");
+      BT.printf("Time Lap: %.5f\t", laptime);
+      BT.printf("Track Length: %.2fm\t ", currentPosition);
+      BT.printf("Medium Speed: %.2fm/s\t ",  mediumspeed);
+      BT.printf("%s\n", "");
+
+      PC.printf("Time Lap: %.5f\t", laptime);
+      PC.printf("Track Length: %.2fm\t ", currentPosition);
+      PC.printf("Medium Speed: %.2fm/s\t ",  mediumspeed);
+      PC.printf("%s\n", "");
 
       // Blink the LEDs
-      while (1) {
+      while (!robotstate) {
         for (int i = 0; i <= 3; i++) {
           for (int j = 0; j <= 3; j++) {
             leds[j] = j == i;
@@ -326,7 +313,7 @@ int main() {
       }
     }
 
-    else if (robotstate && readyStatus) { // Follow the Line
+    else if (robotstate) { // Follow the Line
 
       //LEDS turn off - About Interrupt
       if (cps_left_led_timer.read() > 0.150) {
@@ -381,8 +368,10 @@ int main() {
       righmotorspeed = righmotorspeed > 1.0 ? 1.0 : righmotorspeed < -REVERSE ? -REVERSE : righmotorspeed;
 
       // LOG.printf("PID is working? %f \n", directiongain);
-      LeftMotor.speed(leftmotorspeed);
-      RightMotor.speed(righmotorspeed);
+      if(motorsEnable){
+        LeftMotor.speed(leftmotorspeed);
+        RightMotor.speed(righmotorspeed);
+      }
 
     // Test Motors
       // LeftMotor.speed(0.5);
@@ -436,34 +425,35 @@ int main() {
       // Crossroad
       if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
         crossroad_counter++;
-        LOG.printf("%s,%i,", "C", crossroad_counter);
+        LOG.printf("%s,%i,\n", "C", crossroad_counter);
         checkpoint_left_counter--;
         checkpoint_right_counter--;
       }
       // Curve start/end marks
       else if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter == last_checkpoint_right_counter) {
-        LOG.printf("%s,%i,", "L", checkpoint_left_counter);
+        LOG.printf("%s,%i,%.3f\n", "L", checkpoint_left_counter, LapTimer.read());
         last_checkpoint_left_counter = checkpoint_left_counter;
       }
       // Start/Finish marks
       else if (checkpoint_left_counter == last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
-        LOG.printf("%s,%i,", "R", checkpoint_right_counter);
+        LOG.printf("%s,%i,%.3f\n", "R", checkpoint_right_counter, LapTimer.read());
         last_checkpoint_right_counter = checkpoint_right_counter;
       }
-      else {
-        LOG.printf("%s", "-,-,");
-      }
+      // else {
+      //   LOG.printf("%s", "-,-,");
+      // }
 
       // Encoders positions
-      LOG.printf("%.2f,", leftDistance);
-      LOG.printf("%.2f", rightDistance);
+      // LOG.printf("%.2f,", leftDistance);
+      // LOG.printf("%.2f", rightDistance);
+
 
       // LOG.printf("%i", checkpoint_right_counter);
       //Test of Mapping
       // LOG.printf("CurrentPosition: %.2f \t", currentPosition);
       // LOG.printf("CurrentSpeed: %.2f \t", TargetMark.setup.speed);
 
-      LOG.printf("%s","\n");
+      // LOG.printf("%s","\n");
       LogTimer.reset();
     }
   }
