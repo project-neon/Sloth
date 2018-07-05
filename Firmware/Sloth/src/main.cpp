@@ -11,6 +11,8 @@
 Timer LogTimer; // Debug the loop
 Timer LapTimer; // Time of a lap
 Timer AccTimer; // Acceleration interval
+Timer cps_left_led_timer; // Acceleration interval
+Timer cps_right_led_timer; // Acceleration interval
 
 // Serial
 //Control the Communication with a Computer (Serial) and HC-05
@@ -206,13 +208,15 @@ void btcallback() {
 // Interrupt when Mark Left was change
 void checkpointSensorLeftCallback() {
     checkpoint_left_counter++;
-    leds[2] = true;
+    cps_left_led_timer.start();
+    leds[0] = 1;
 }
 
 //Interrupt when Mark Right was change
 void checkpointSensorRightCallback() {
     checkpoint_right_counter++;
-    leds[3] = true;
+    cps_right_led_timer.start();
+    leds[3] = 1;
 }
 
 int main() {
@@ -325,8 +329,18 @@ int main() {
     else if (robotstate && readyStatus) { // Follow the Line
 
       //LEDS turn off - About Interrupt
-      leds[2]=0;
-      leds[3]=0;
+      if (cps_left_led_timer.read() > 0.150) {
+        leds[0] = 0;
+        cps_left_led_timer.reset();
+        cps_left_led_timer.stop();
+      }
+
+      if (cps_right_led_timer.read() > 0.150) {
+        leds[3] = 0;
+        cps_right_led_timer.reset();
+        cps_right_led_timer.stop();
+      }
+
 
       // Check if changed mark
       if (currentPosition >= TargetMark.position && MAPPING_ENABLED) {
