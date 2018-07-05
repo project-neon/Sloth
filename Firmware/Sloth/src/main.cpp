@@ -86,8 +86,8 @@ PID directioncontrol(0, 0, 0);
 // float kidir = 0.000000;
 // float kddir = 0.0000035;
 
-float speedbase = 0.75;
-float kpdir = 0.00025;
+float speedbase = 0.50;
+float kpdir = 0.00030;
 float kidir = 0.000000;
 float kddir = 0.0000050;
 
@@ -425,27 +425,27 @@ int main() {
       // Crossroad
       if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
         crossroad_counter++;
-        LOG.printf("%s,%i,\n", "C", crossroad_counter);
+        LOG.printf("%s,%i,", "C", crossroad_counter);
         checkpoint_left_counter--;
         checkpoint_right_counter--;
       }
       // Curve start/end marks
       else if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter == last_checkpoint_right_counter) {
-        LOG.printf("%s,%i,%.3f\n", "L", checkpoint_left_counter, LapTimer.read());
+        LOG.printf("%s,%i,", "L", checkpoint_left_counter);
         last_checkpoint_left_counter = checkpoint_left_counter;
       }
       // Start/Finish marks
       else if (checkpoint_left_counter == last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
-        LOG.printf("%s,%i,%.3f\n", "R", checkpoint_right_counter, LapTimer.read());
+        LOG.printf("%s,%i,", "R", checkpoint_right_counter);
         last_checkpoint_right_counter = checkpoint_right_counter;
       }
-      // else {
-      //   LOG.printf("%s", "-,-,");
-      // }
+      else {
+        LOG.printf("%s", "-,-,");
+      }
 
       // Encoders positions
       // LOG.printf("%.2f,", leftDistance);
-      // LOG.printf("%.2f", rightDistance);
+      // LOG.printf("%.2f,", rightDistance);
 
 
       // LOG.printf("%i", checkpoint_right_counter);

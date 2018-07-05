@@ -11,10 +11,10 @@
 //
 // Serial DEBUG
 //
-#define LOG_ENABLED true
+#define LOG_ENABLED false
 #define LOG if(LOG_ENABLED) BT
 #define PC_SPEED  115200
-#define LOG_INTERVAL  0.1 //
+#define LOG_INTERVAL  0.01 //
 
 //
 // Bluetooth Configs (Type here)
@@ -98,6 +98,6 @@
 #define Stop      4
 
 #define TRACK_EVENT_NAME WC14_2018_SAFE
-#define GAIN_NUMBER k1
+#define GAIN_NUMBER k2
 
 #endif
