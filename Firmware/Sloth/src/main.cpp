@@ -66,6 +66,9 @@ InterruptIn CheckpointSensorLeft(PIN_TRACK_MARKING_LEFT);
 // Counters of left and Right sensors
 int checkpoint_left_counter = 0;
 int checkpoint_right_counter = 0;
+int last_checkpoint_left_counter = 0;
+int last_checkpoint_right_counter = 0;
+int crossroad_counter = 0;
 
 bool robotstate = true;
 bool readyStatus = true;
@@ -411,16 +414,42 @@ int main() {
       // LOG.printf("%.2f,", LapTimer.read());
       // LOG.printf("%i,", currentMark);
       // LOG.printf("%i", linePosition);
+
       // LOG.printf("%.4f,", currentPosition);
       // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
-      // LOG.printf("%i,", checkpoint_left_counter);
-      // LOG.printf("%i", checkpoint_right_counter);
 
+      // Checkpoint sensors mapping
+      // Crossroad
+      if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
+        crossroad_counter++;
+        LOG.printf("%s,%i,", "C", crossroad_counter);
+        checkpoint_left_counter--;
+        checkpoint_right_counter--;
+      }
+      // Curve start/end marks
+      else if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter == last_checkpoint_right_counter) {
+        LOG.printf("%s,%i,", "L", checkpoint_left_counter);
+        last_checkpoint_left_counter = checkpoint_left_counter;
+      }
+      // Start/Finish marks
+      else if (checkpoint_left_counter == last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
+        LOG.printf("%s,%i,", "R", checkpoint_right_counter);
+        last_checkpoint_right_counter = checkpoint_right_counter;
+      }
+      else {
+        LOG.printf("%s", "-,-,");
+      }
+
+      // Encoders positions
+      LOG.printf("%.2f,", leftDistance);
+      LOG.printf("%.2f", rightDistance);
+
+      // LOG.printf("%i", checkpoint_right_counter);
       //Test of Mapping
       // LOG.printf("CurrentPosition: %.2f \t", currentPosition);
       // LOG.printf("CurrentSpeed: %.2f \t", TargetMark.setup.speed);
 
-      // LOG.printf("%s\n","");
+      LOG.printf("%s","\n");
       LogTimer.reset();
     }
   }
