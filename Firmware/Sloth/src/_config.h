@@ -14,7 +14,7 @@
 #define LOG_ENABLED true
 #define LOG if(LOG_ENABLED) BT
 #define PC_SPEED  115200
-#define LOG_INTERVAL  0.1 //
+#define LOG_INTERVAL  0.05 //
 
 //
 // Bluetooth Configs (Type here)
@@ -54,7 +54,7 @@
 // #define FINAL_TARGET_POSITION   1.5
 #define ACCELERATION_ENABLED true
 #define ACCELERATION_INTERVAL 0.01
-#define MAPPING_ENABLED true
+#define MAPPING_ENABLED false
 #define FIRST_MARK_POSITION 0.5
 
 //
