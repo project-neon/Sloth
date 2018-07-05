@@ -74,42 +74,7 @@ bool readyStatus = true;
 float directiongain = 0.0;
 PID directioncontrol(0, 0, 0);
 
-// Robot Setups
-// struct Setup {
-//   float speed;
-//   float kp;
-//   float ki;
-//   float kd;
-// };
-
 // Robot Standard Setups
-                // Speed,   kP,   kI,   kD
-// Setup Curve     = {0.85, 0.00030, 0.0000000, 0.0000075};
-
-/* MOTOR 10:1
-Setup SlowCurve = {0.3, 0.0020000, 0.000000, 0.000200};
-
-Setup Curve     = {0.4, 0.00020000, 0.000000, 0.000020};
-
-Setup Straight  = {1.0, 0.00030000, 0.000000, 0.00001};
-Setup FastCurve     = {0.4, 0.00020000, 0.000000, 0.000020};
-
-Setup Stop      = {0.1, 0.000100, 0, 0.000001};
-*/
-
-// MOTOR 30:1
-// Setup SlowCurve = {0.62, 0.00025000, 0.000000, 0.0000050};
-//
-// Setup Curve     = {0.6, 0.00022, 0.000000, 0.0000050};
-//
-// Setup Straight  = {1.0, 0.00018, 0.000000, 0.0000075};
-//
-// Setup FastCurve = {0.7, 0.00022, 0.000000, 0.0000075};
-// Setup FastFastCurve = {0.95, 0.00022, 0.000000, 0.0000075};
-//
-// Setup Stop      = {0.1, 0.000100, 0, 0.000001};
-
-
 float speedbase = 0.30;
 float kpdir = 0.00020;
 float kidir = 0.000000;
