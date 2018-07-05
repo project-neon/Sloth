@@ -15,7 +15,7 @@
 #define LOG if(LOG_ENABLED) BT
 #define PC_SPEED  115200
 #define LOG_INTERVAL  0.1 //
-#define RX_MAX  10 
+#define RX_MAX  15 
 
 //
 // Bluetooth Configs (Type here)
