@@ -81,15 +81,15 @@ float directiongain = 0.0;
 PID directioncontrol(0, 0, 0);
 
 
-float speedbase = 0.30;
-float kpdir = 0.00020;
-float kidir = 0.000000;
-float kddir = 0.0000035;
-
-// float speedbase = 0.50;
-// float kpdir = 0.00030;
+// float speedbase = 0.30;
+// float kpdir = 0.00020;
 // float kidir = 0.000000;
-// float kddir = 0.0000050;
+// float kddir = 0.0000035;
+
+float speedbase = 0.85;
+float kpdir = 0.00022;
+float kidir = 0.0000000;
+float kddir = 0.000015;
 
 Setup Normal     = {speedbase, kpdir, kidir, kddir};
 
@@ -111,7 +111,7 @@ void lineReaderCalibrate() {
   PC.printf("%s", "Calibrating sensors...");
   BT.printf("%s", "Calibrating sensors...");
   leds[0] = 1;
-  for (int i = 0; i < 500; i++)
+  for (int i = 0; i < 1000; i++)
     LineReader.calibrate(true);
   leds[0] = 0;
   BT.printf("%s\n", "Done.");
@@ -133,10 +133,10 @@ void btcallback() {
   char rcvd = BT.getc();
   switch (rcvd) {
     case 'A':
-      kpdir += 0.01;
+      kpdir += 0.00005;
       break;
     case 'B':
-      kpdir -= 0.01;
+      kpdir -= 0.00005;
       break;
     case 'C':
       kidir += 0.0000001;
@@ -145,10 +145,10 @@ void btcallback() {
       kidir -= 0.0000001;
       break;
     case 'E':
-      kddir += 0.000001;
+      kddir += 0.000005;
       break;
     case 'F':
-      kddir -= 0.000001;
+      kddir -= 0.000005;
       break;
     case 'u':
       speedbase += 0.01;
@@ -168,6 +168,8 @@ void btcallback() {
       // robotstate = true;
       PC.printf("Robot will Start in 2s");
       BT.printf("Robot will Start in 2s");
+      LeftEncoder.reset();
+      RightEncoder.reset();
       wait(2);
       break;
     case 'S':
