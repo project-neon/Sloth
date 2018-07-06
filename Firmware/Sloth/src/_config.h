@@ -48,7 +48,7 @@
 // General Settings
 //
 #define STOP_BY_TIME false
-#define LAP_TIME 20 //in seconds
+#define LAP_TIME 5 //in seconds
 #define STOP_BY_DISTANCE true
 #define FINAL_TARGET_POSITION   24.0  // in meters
 // #define FINAL_TARGET_POSITION   1.5

@@ -148,7 +148,7 @@ Mark WC14_2018[] = {
 // {04.14 - 00.00, -10, GAIN_NUMBER[Curve]},      //07
 // {04.31 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //08
 {04.66 - 00.00, -10, GAIN_NUMBER[Curve]},      //09
-{05.20 - 00.20, +1.5, GAIN_NUMBER[Straight]},   //10
+{05.20 - 00.30, +1.5, GAIN_NUMBER[Straight]},   //10
 {05.45 - 00.00, -10, GAIN_NUMBER[Curve]},      //11
 {05.97 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //12
 {06.23 - 00.00, -10, GAIN_NUMBER[Curve]},      //13

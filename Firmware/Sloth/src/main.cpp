@@ -405,8 +405,8 @@ int main() {
 
 
      // Certifies correct operation of encoders
-     // LOG.printf("Left Encoder: %i \t", LeftEncoder.getPulses());
-     // LOG.printf("Right Encoder: %i \t", RightEncoder.getPulses());
+     LOG.printf("Left Encoder: %i \t", LeftEncoder.getPulses());
+     LOG.printf("Right Encoder: %i \t", RightEncoder.getPulses());
      // LOG.printf("%.4f\t", leftDistance);
      // LOG.printf("%.4f\t", rightDistance);
 
@@ -422,7 +422,7 @@ int main() {
 
       // LOG.printf("%.4f,", currentPosition);
       // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
-
+/*
       // Checkpoint sensors mapping
       // Crossroad
       if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
@@ -448,7 +448,7 @@ int main() {
       // Encoders positions
       LOG.printf("%.2f,", leftDistance);
       LOG.printf("%.2f", rightDistance);
-
+*/
 
       // LOG.printf("%i", checkpoint_right_counter);
       //Test of Mapping
