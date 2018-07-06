@@ -50,7 +50,7 @@
 #define STOP_BY_TIME false
 #define LAP_TIME 20 //in seconds
 #define STOP_BY_DISTANCE true
-#define FINAL_TARGET_POSITION   23.5  // in meters
+#define FINAL_TARGET_POSITION   24.0  // in meters
 // #define FINAL_TARGET_POSITION   1.5
 #define ACCELERATION_ENABLED true
 #define ACCELERATION_INTERVAL 0.01
@@ -97,7 +97,7 @@
 #define Straight  3
 #define Stop      4
 
-#define TRACK_EVENT_NAME HACKPULICA_V2
+#define TRACK_EVENT_NAME WC14_2018_SAFE
 #define GAIN_NUMBER k3
 
 #endif
