@@ -97,7 +97,7 @@
 #define Straight  3
 #define Stop      4
 
-#define TRACK_EVENT_NAME WC14_2018_SAFE
-#define GAIN_NUMBER k2
+#define TRACK_EVENT_NAME HACKPULICA_V2
+#define GAIN_NUMBER k3
 
 #endif

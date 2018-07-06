@@ -81,15 +81,15 @@ float directiongain = 0.0;
 PID directioncontrol(0, 0, 0);
 
 
-// float speedbase = 0.30;
-// float kpdir = 0.00020;
-// float kidir = 0.000000;
-// float kddir = 0.0000035;
-
-float speedbase = 0.50;
-float kpdir = 0.00030;
+float speedbase = 0.30;
+float kpdir = 0.00020;
 float kidir = 0.000000;
-float kddir = 0.0000050;
+float kddir = 0.0000035;
+
+// float speedbase = 0.50;
+// float kpdir = 0.00030;
+// float kidir = 0.000000;
+// float kddir = 0.0000050;
 
 Setup Normal     = {speedbase, kpdir, kidir, kddir};
 
@@ -444,8 +444,8 @@ int main() {
       }
 
       // Encoders positions
-      // LOG.printf("%.2f,", leftDistance);
-      // LOG.printf("%.2f,", rightDistance);
+      LOG.printf("%.2f,", leftDistance);
+      LOG.printf("%.2f", rightDistance);
 
 
       // LOG.printf("%i", checkpoint_right_counter);
@@ -453,7 +453,7 @@ int main() {
       // LOG.printf("CurrentPosition: %.2f \t", currentPosition);
       // LOG.printf("CurrentSpeed: %.2f \t", TargetMark.setup.speed);
 
-      // LOG.printf("%s","\n");
+      LOG.printf("%s","\n");
       LogTimer.reset();
     }
   }
