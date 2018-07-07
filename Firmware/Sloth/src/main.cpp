@@ -87,9 +87,9 @@ PID directioncontrol(0, 0, 0);
 // float kddir = 0.0000035;
 
 float speedbase = 0.3;
-float kpdir = 0.75;
+float kpdir = 1.0;
 float kidir = 0.0000000;
-float kddir = 0.025;
+float kddir = 0.075;
 
 Setup Normal     = {speedbase, kpdir, kidir, kddir};
 
@@ -418,11 +418,11 @@ int main() {
       // Manual Track Mapping
       // LOG.printf("%.2f,", LapTimer.read());
       // LOG.printf("%i,", currentMark);
-      LOG.printf("%.5f", linePosition);
+      // LOG.printf("%.5f", linePosition);
 
       // LOG.printf("%.4f,", currentPosition);
       // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
-/*
+
       // Checkpoint sensors mapping
       // Crossroad
       if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
@@ -448,7 +448,7 @@ int main() {
       // Encoders positions
       LOG.printf("%.2f,", leftDistance);
       LOG.printf("%.2f", rightDistance);
-*/
+
 
       // LOG.printf("%i", checkpoint_right_counter);
       //Test of Mapping
