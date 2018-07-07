@@ -54,7 +54,7 @@
 // #define FINAL_TARGET_POSITION   1.5
 #define ACCELERATION_ENABLED true
 #define ACCELERATION_INTERVAL 0.01
-#define MAPPING_ENABLED true
+#define MAPPING_ENABLED false
 #define FIRST_MARK_POSITION 0.5
 
 //
@@ -64,7 +64,7 @@
 //
 // Motors config (H-Bridge)
 //
-#define REVERSE	0.00
+#define REVERSE	0.01
 #define PIN_M2_EN   p21
 #define PIN_M2_IN1  p22
 #define PIN_M2_IN2  p23
@@ -75,8 +75,8 @@
 //
 // Encoder config (Quadrature)
 //
-#define PULSES_PER_REV 179.0 // 30:1
-// #define PULSES_PER_REV 61.0 // 10:1
+// #define PULSES_PER_REV 179.0 // 30:1
+#define PULSES_PER_REV 59.0 // 10:1
 #define PIN_ENC1_A  p27
 #define PIN_ENC1_B	p28
 #define PIN_ENC2_A	p30
@@ -98,6 +98,6 @@
 #define Stop      4
 
 #define TRACK_EVENT_NAME WC14_2018_SAFE
-#define GAIN_NUMBER k3
+#define GAIN_NUMBER k4_M10_1
 
 #endif

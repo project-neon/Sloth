@@ -182,44 +182,41 @@ Mark WC14_2018[] = {
 };
 
 Mark WC14_2018_SAFE[] = {
-{01.25 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //01
-{01.67 - 00.00, -10, GAIN_NUMBER[Curve]},      //02
-{02.44 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //03
-{03.15 - 00.00, -10, GAIN_NUMBER[Curve]},      //04
-{03.36 - 00.00, -1.0, GAIN_NUMBER[Curve]},      //05
-{03.95 - 00.20, +1.5, GAIN_NUMBER[Straight]},   //06
-// {04.14 - 00.00, -10, GAIN_NUMBER[Curve]},      //07
-// {04.31 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //08
-{04.66 - 00.00, -10, GAIN_NUMBER[Curve]},      //09
-{05.20 - 00.20, +1.5, GAIN_NUMBER[Straight]},   //10
-{05.45 - 00.00, -10, GAIN_NUMBER[Curve]},      //11
-{05.97 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //12
-{06.23 - 00.00, -10, GAIN_NUMBER[Curve]},      //13
-{07.39 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //14
-// {07.61 - 00.00, -10, GAIN_NUMBER[Curve]},      //15
-// {07.91 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //16
-{08.27 - 00.00, -10, GAIN_NUMBER[Curve]},      //17
-{09.61 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //18
-{10.14 - 00.00, -10, GAIN_NUMBER[Curve]},      //19
-{11.62 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //20
-{12.09 - 00.00, -10, GAIN_NUMBER[Curve]},      //21
-{13.26 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //22
-{13.51 - 00.00, -10, GAIN_NUMBER[Curve]},      //23
-{14.36 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //24
-{14.55 - 00.00, -10, GAIN_NUMBER[Curve]},      //25
-{16.12 - 00.00, +1.5, GAIN_NUMBER[FastCurve]},  //26
-{16.67 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //27
-{16.91 - 00.00, -10, GAIN_NUMBER[SlowCurve]},   //28
-{17.74 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //29
-{18.04 - 00.00, -10, GAIN_NUMBER[Curve]},      //30
-{19.12 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //31
-{19.46 - 00.00, -10, GAIN_NUMBER[Curve]},      //32
-{22.30 - 00.15, +1.5, GAIN_NUMBER[Straight]},   //33
-{22.68 - 00.00, -10, GAIN_NUMBER[Curve]},      //34
-
-{23.20 - 00.00, +1.0, GAIN_NUMBER[Straight]},           //35
-
-
+  {01.25 - 00.15, +1.5, GAIN_NUMBER[Straight]},     //01
+  {01.67 - 00.00, -10, GAIN_NUMBER[Curve]},         //02
+  {02.44 - 00.15, +1.5, GAIN_NUMBER[Straight]},     //03
+  {03.15 - 00.00, -10, GAIN_NUMBER[Curve]},         //04
+  {03.36 - 00.00, -1.0, GAIN_NUMBER[Curve]},        //05
+  {03.95 - 00.20, +1.5, GAIN_NUMBER[Straight]},     //06
+  // {04.14 - 00.00, -10, GAIN_NUMBER[Curve]},      //07
+  // {04.31 - 00.15, +1.5, GAIN_NUMBER[Straight]},  //08
+  {04.66 - 00.00, -10, GAIN_NUMBER[Curve]},         //09
+  {05.20 - 00.20, +1.5, GAIN_NUMBER[Straight]},     //10
+  {05.45 - 00.00, -10, GAIN_NUMBER[Curve]},         //11
+  {05.97 - 00.15, +1.5, GAIN_NUMBER[Straight]},     //12
+  {06.23 - 00.00, -10, GAIN_NUMBER[Curve]},         //13
+  {07.39 - 00.15, +1.5, GAIN_NUMBER[Straight]},     //14
+  // {07.61 - 00.00, -10, GAIN_NUMBER[Curve]},      //15
+  // {07.91 - 00.15, +1.5, GAIN_NUMBER[Straight]},  //16
+  {08.27 - 00.00, -10, GAIN_NUMBER[Curve]},         //17
+  {09.61 - 00.15, +1.5, GAIN_NUMBER[Straight]},     //18
+  {10.14 - 00.00, -10, GAIN_NUMBER[Curve]},         //19
+  {11.62 - 00.15, +1.5, GAIN_NUMBER[Straight]},     //20
+  {12.09 - 00.00, -10, GAIN_NUMBER[Curve]},         //21
+  {13.26 - 00.15, +1.5, GAIN_NUMBER[Straight]},     //22
+  {13.51 - 00.00, -10, GAIN_NUMBER[Curve]},         //23
+  {14.36 - 00.15, +1.5, GAIN_NUMBER[Straight]},     //24
+  {14.55 - 00.00, -10, GAIN_NUMBER[Curve]},         //25
+  {16.12 - 00.00, +1.5, GAIN_NUMBER[FastCurve]},    //26
+  {16.67 - 00.15, +1.5, GAIN_NUMBER[Straight]},     //27
+  {16.91 - 00.00, -10, GAIN_NUMBER[SlowCurve]},     //28
+  {17.74 - 00.15, +1.5, GAIN_NUMBER[Straight]},     //29
+  {18.04 - 00.00, -10, GAIN_NUMBER[Curve]},         //30
+  {19.12 - 00.15, +1.5, GAIN_NUMBER[Straight]},     //31
+  {19.46 - 00.00, -10, GAIN_NUMBER[Curve]},         //32
+  {22.30 - 00.15, +1.5, GAIN_NUMBER[Straight]},     //33
+  {22.68 - 00.00, -10, GAIN_NUMBER[Curve]},         //34
+  {23.20 - 00.00, +1.0, GAIN_NUMBER[Straight]},     //35
   {FINAL_TARGET_POSITION, +1.5, GAIN_NUMBER[Straight]}
   // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
 };

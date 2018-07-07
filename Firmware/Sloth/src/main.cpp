@@ -59,7 +59,7 @@ PinName pinsLineReader[NUM_SENSORS] = {
 QTRSensorsAnalog LineReader(pinsLineReader,
     NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, EMITTER_PIN);
 unsigned int sensorvalues[NUM_SENSORS];
-int linePosition; // line position in the line reader
+float linePosition; // line position in the line reader
 
 // Lap sensor settings
 InterruptIn CheckpointSensorRight(PIN_TRACK_MARKING_RIGHT);
@@ -86,10 +86,10 @@ PID directioncontrol(0, 0, 0);
 // float kidir = 0.000000;
 // float kddir = 0.0000035;
 
-float speedbase = 0.85;
-float kpdir = 0.00022;
+float speedbase = 0.3;
+float kpdir = 0.75;
 float kidir = 0.0000000;
-float kddir = 0.000015;
+float kddir = 0.025;
 
 Setup Normal     = {speedbase, kpdir, kidir, kddir};
 
@@ -342,7 +342,7 @@ int main() {
       }
 
       // Position of the line: (left)-2500 to 2500(right)
-      linePosition = LineReader.readLine(sensorvalues, QTR_EMITTERS_ON, WHITE_LINE) - 2500.0;
+      linePosition = (float)(LineReader.readLine(sensorvalues, QTR_EMITTERS_ON, WHITE_LINE) - 2500.0)/2500.0;
 
       directioncontrol.setProcessValue(linePosition);
       directiongain = directioncontrol.compute();
@@ -405,8 +405,8 @@ int main() {
 
 
      // Certifies correct operation of encoders
-     LOG.printf("Left Encoder: %i \t", LeftEncoder.getPulses());
-     LOG.printf("Right Encoder: %i \t", RightEncoder.getPulses());
+     // LOG.printf("Left Encoder: %i \t", LeftEncoder.getPulses());
+     // LOG.printf("Right Encoder: %i \t", RightEncoder.getPulses());
      // LOG.printf("%.4f\t", leftDistance);
      // LOG.printf("%.4f\t", rightDistance);
 
@@ -418,7 +418,7 @@ int main() {
       // Manual Track Mapping
       // LOG.printf("%.2f,", LapTimer.read());
       // LOG.printf("%i,", currentMark);
-      // LOG.printf("%i", linePosition);
+      LOG.printf("%.5f", linePosition);
 
       // LOG.printf("%.4f,", currentPosition);
       // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
