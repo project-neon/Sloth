@@ -23,6 +23,7 @@ Os comandos podem ter basicamente 5 componentes essenciais, listados abaixo
 | Full config | 0x24 | SLOTH_OPCODE_CONFIG | Define um conjunto de valores: kp, ki e kd ao mesmo tempo |
 | Start | 0x25 | SLOTH_OPCODE_START | Inicia algum ciclo no robô |
 | Stop | 0x26 | SLOTH_OPCODE_STOP | Para o que o robô está fazendo |
+| Save | 0x27 | SLOTH_OPCODE_SAVE | Salva os parâmetros do PID na EEPROM |
 
 ## Definições de Payloads
 
