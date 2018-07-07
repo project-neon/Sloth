@@ -2,6 +2,7 @@
    with a value that represents an ASCII character,
    so the communication is readable through serial terminal */
 #define ENUM_OFFSET	0x21 // Adding an offset to enums
+#define SLOTH_PROTOCOL_CMD_MAX_SIZE (SLOTH_OPCODE_EOF - ENUM_OFFSET)
 
 typedef enum sloth_opcode
 {
@@ -32,24 +33,24 @@ typedef enum sloth_ctrl_var
 	SLOT_VAR_KI,
 	SLOT_VAR_KD,
 	SLOT_VAR_EOF,
-}sloth_ctrl_var_t
+}sloth_ctrl_var_t;
 
-typedef struct sloth_config
+typedef struct __attribute__((__packed__)) sloth_config
 {
 	uint32_t kp;
 	uint32_t ki;
 	uint32_t kd;
-}sloth_config_t
+}sloth_config_t;
 
 // todo: define a better name for this.
-typedef struct sloth_var_set
+typedef struct __attribute__((__packed__)) sloth_var_set
 {
 	sloth_ctrl_var_t var;
 	uint32_t value;
-}sloth_var_set_t
+}sloth_var_set_t;
 
 /*  Defining a type for the structure of a command. */
-typedef struct sloth_cmd
+typedef struct __attribute__((__packed__)) sloth_cmd
 {
 	sloth_opcode_t 		cmd;
 	// sloth_op_status_t 	status;	// for now, maybe status isn't a big deal
@@ -57,6 +58,6 @@ typedef struct sloth_cmd
 	{
 		sloth_var_set_t  variable;
 		sloth_config_t	 config;
-	}
+	};
 	// uint16_t crc; // for now we dont need CRC
-}slot_cmd_t;
+}sloth_cmd_t;
