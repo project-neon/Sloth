@@ -406,9 +406,10 @@ int main() {
 
       // Certifies correct operation of line sensors
       // LineReader.read(sensorvalues, QTR_EMITTERS_ON);
-      //  for (int i = 0; i < 6; i++)
+      //  for (int i = 0; i < 6; i++) {
       //   LOG.printf("%i \t", sensorvalues[i]);
-      // LOG.printf("Line: %i \t", linePosition);
+      // }
+      // LOG.printf("%i \n", linePosition);
 
       // LOG.printf("Mark: %i \t", MarksensorTest.read());
 
@@ -432,6 +433,7 @@ int main() {
       // LOG.printf("%.4f,", currentPosition);
       // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
 
+      // START
       // Checkpoint sensors mapping
       // Crossroad
       if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
@@ -464,6 +466,9 @@ int main() {
       // LOG.printf("CurrentSpeed: %.2f \t", TargetMark.setup.speed);
 
       LOG.printf("%s","\n");
+
+      //END*/
+
       LogTimer.reset();
     }
   }
