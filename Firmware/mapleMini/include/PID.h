@@ -1,7 +1,6 @@
 #ifndef PID_H
 #define PID_H
 
-#include "Timer.h"
 
 class PID {
 public:
@@ -10,7 +9,7 @@ public:
         this->kP = kP;
         this->kI = kI;
         this->kD = kD;
-        t.start();
+        lastTimer = 0;
     }
     
     void setProcessValue(float sample){
@@ -30,11 +29,9 @@ public:
     float compute(){
         
         error = setPoint - sample;
-        
-        float deltaTime = t.read(); 
-        
-        t.reset();
-        
+        timer = millis();
+        float deltaTime =  timer - lastTimer;
+        lastTimer = timer;
         P = error * kP;
         I += (error * kI) * deltaTime;
         D = ((lastSample - sample) * kD) / deltaTime;
@@ -47,7 +44,8 @@ public:
      }
      
      protected: 
-        Timer t;
+        float timer;
+        float lastTimer;
         float error;
         float sample;
         float lastSample;
