@@ -2,7 +2,7 @@
 
 Motor::Motor(PinName pwm, PinName in1, PinName in2):
         _pwm(pwm), _in1(in1), _in2(in2)  {
-    _pwm.period(0.001); //001
+    _pwm.period(0.00001); //001
     _pwm = 0;
 }
 
