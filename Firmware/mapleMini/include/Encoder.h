@@ -10,10 +10,14 @@ class Encoder {
         int getPulses();
         float getRevolutions();
         void reset();
-        // void encoderChannelA();  
-        // void encoderChannelB();  
+
+         void encoderChannelA();
+         void encoderChannelB();
 
     protected:
+		int _pulses=0;
+		uint8_t _pinA;
+		uint8_t _pinB;
         int _pulsesPerRev;
         float _revolutions;
         float _distance;

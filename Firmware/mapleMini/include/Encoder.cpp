@@ -1,10 +1,7 @@
 #include "Encoder.h"
 
-int _pulses=0;
-uint8_t _pinA;
-uint8_t _pinB;
 
-void encoderChannelA(){
+void Encoder::encoderChannelA(){
 	if (digitalRead(_pinA)== HIGH) {
     	_pulses++;
 	}
@@ -12,7 +9,7 @@ void encoderChannelA(){
 		_pulses--;
 	}
 }
-void encoderChannelB(){
+void Encoder::encoderChannelB(){
 	if (digitalRead(_pinB)== HIGH) {
     	_pulses--;
 	}

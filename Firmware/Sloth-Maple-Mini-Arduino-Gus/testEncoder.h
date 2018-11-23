@@ -60,11 +60,11 @@ void testEncoder(){
         delay(250);
         int leftPulses = LeftEncoder.getPulses();
         LOG.print(leftPulses);
-        if(leftPulses>0) 
+        if(leftPulses>0)
             LOG.println("\t left working");
-        else if(leftPulses<0) 
+        else if(leftPulses<0)
             LOG.println("\t Change Channels");
-        else 
+        else
             LOG.println("\t Fail");
         LeftMotor.brake();
 
@@ -76,11 +76,11 @@ void testEncoder(){
         delay(250);
         int RightPulses = RightEncoder.getPulses();
         LOG.print(RightPulses);
-        if(RightPulses>0) 
+        if(RightPulses>0)
             LOG.println("\t Right working");
-        else if(RightPulses<0) 
+        else if(RightPulses<0)
             LOG.println("\t Change Channels");
-        else 
+        else
             LOG.println("\t Fail");
         RightMotor.brake();
     delay(500);
