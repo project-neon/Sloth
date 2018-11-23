@@ -31,6 +31,9 @@
 
 #define QTR_MAX_SENSORS 31
 
+#define FIX_MAX_ANALOG_READ 4000 //old = 1023
+#define MAX_ANALOG_READ 4000 //old = 1023
+
 // Base class: this class cannot be instantiated directly.
 // Instead, you should instantiate one of its derived classes.
 class QTRSensors

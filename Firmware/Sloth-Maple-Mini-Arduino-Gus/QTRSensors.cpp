@@ -265,8 +265,8 @@ void QTRSensors::readCalibrated(unsigned int *sensor_values, unsigned char readM
                 * 1000 / denominator;
         if(x < 0)
             x = 0;
-        else if(x > 1000)
-            x = 1000;
+        else if(x > MAX_ANALOG_READ)
+            x = MAX_ANALOG_READ;
         sensor_values[i] = x;
     }
 
@@ -679,7 +679,8 @@ void QTRSensorsAnalog::init(unsigned char* analogPins,
     QTRSensors::init(analogPins, numSensors, emitterPin);
 
     _numSamplesPerSensor = numSamplesPerSensor;
-    _maxValue = 1023; // this is the maximum returned by the A/D conversion
+    _maxValue = FIX_MAX_ANALOG_READ; // this is the maximum returned by the A/D conversion
+    // _maxValue = MAX_ANALOG_READ; // this is the maximum returned by the A/D conversion
 }
 
 

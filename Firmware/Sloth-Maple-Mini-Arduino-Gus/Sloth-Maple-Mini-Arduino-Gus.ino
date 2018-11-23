@@ -343,9 +343,9 @@ void testPID(){
 void loop(){
   // testMotor();
   // testEncoder(false);
-  // testLineSensor();
+  testLineSensor();
   // testPID();
-  followLine();
+  // followLine();
   // delay(100);
 }
 

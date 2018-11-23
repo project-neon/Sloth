@@ -5,9 +5,14 @@
 #define SETTINGSSPEED_H
 
 float speedbase = 20;
-float kpdir = 0.022;
+// float kpdir = 0.022;
+// float kidir = 0.0;
+// float kddir = 0.0015;
+
+float kpdir = 2.2;
 float kidir = 0.0;
-float kddir = 0.0015;
+float kddir = 0.0;
+
 
 Setup Normal     = {speedbase, kpdir, kidir, kddir};
 
