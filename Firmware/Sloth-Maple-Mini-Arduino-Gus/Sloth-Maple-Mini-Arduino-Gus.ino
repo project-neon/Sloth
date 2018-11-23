@@ -1,19 +1,21 @@
 
 #include "Motor.h"
-#include "Encoder.h"
+// #include "Encoder.h"
 #include "_config.h"
+#include "QEI.h"
 
-Motor RightMotor(PIN_M1_PWM, PIN_M1_IN1, PIN_M1_IN2);
-Motor LeftMotor(PIN_M2_PWM, PIN_M2_IN1, PIN_M2_IN2);
+Motor LeftMotor(PIN_M1_PWM, PIN_M1_IN1, PIN_M1_IN2);
+Motor RightMotor(PIN_M2_PWM, PIN_M2_IN1, PIN_M2_IN2);
 
-Encoder LeftEncoder(PIN_ENC1_A, PIN_ENC1_B, PULSES_PER_REV, WHEEL_RADIUS);
-Encoder RightEncoder(PIN_ENC2_A, PIN_ENC2_B, PULSES_PER_REV, WHEEL_RADIUS);
+QEI LeftEncoder(PIN_ENC1_A, PIN_ENC1_B, PULSES_PER_REV, WHEEL_RADIUS);
+QEI RightEncoder(PIN_ENC2_A, PIN_ENC2_B, PULSES_PER_REV, WHEEL_RADIUS);
 
 void setup(){
   PC.begin(PC_SPEED);
   BT.begin(BT_SPEED);
   LOG.println("Starting Test Motor");
-
+  setupLeftEncoder();
+  setupRightEncoder();
 }
 
 
@@ -79,14 +81,40 @@ void testMotor(){
 
 //TEST ENCODER
 
-bool AUTO = false; //change here to do test with your hands
+bool AUTO_ENCODER = true; //change here to do test with your hands
+
+void leftEncoder() {
+  LeftEncoder.encode();
+}
+
+void setupLeftEncoder() {
+  //X2 encoding uses interrupts on only channel A.
+  attachInterrupt(digitalPinToInterrupt(PIN_ENC1_A), leftEncoder, CHANGE);
+
+  //X4 encoding uses interrupts on      channel A,
+  //and on channel B.
+  attachInterrupt(digitalPinToInterrupt(PIN_ENC1_B), leftEncoder, CHANGE);
+}
+
+void rightEncoder() {
+  RightEncoder.encode();
+}
+
+void setupRightEncoder() {
+  //X2 encoding uses interrupts on only channel A.
+  attachInterrupt(digitalPinToInterrupt(PIN_ENC2_A), rightEncoder, CHANGE);
+
+  //X4 encoding uses interrupts on      channel A,
+  //and on channel B.
+  attachInterrupt(digitalPinToInterrupt(PIN_ENC2_B), rightEncoder, CHANGE);
+}
 
 void testEncoder(){
 
     LOG.println("Starting Test Encoder");
     delay(500);
 
-    while(!AUTO){
+    while(!AUTO_ENCODER){
         LOG.print("Left: ");
         LOG.print("\t");
         LOG.print(LeftEncoder.getPulses());
@@ -97,15 +125,15 @@ void testEncoder(){
         LOG.println();
         delay(100);
     }
-    while(AUTO){
+    while(AUTO_ENCODER){
         LOG.print("Left: ");
         LOG.print("\t");
-        LeftMotor.speed(10);
-        delay(250);
+        LeftMotor.speed(25);
+        delay(1000);
         int leftPulses = LeftEncoder.getPulses();
         LOG.print(leftPulses);
         if(leftPulses>0)
-            LOG.println("\t left working");
+            LOG.println("\t Left working");
         else if(leftPulses<0)
             LOG.println("\t Change Channels");
         else
@@ -116,8 +144,8 @@ void testEncoder(){
 
         LOG.print("Right: ");
         LOG.print("\t");
-        RightMotor.speed(10);
-        delay(250);
+        RightMotor.speed(25);
+        delay(1000);
         int RightPulses = RightEncoder.getPulses();
         LOG.print(RightPulses);
         if(RightPulses>0)
@@ -129,15 +157,15 @@ void testEncoder(){
         RightMotor.brake();
     delay(500);
     LOG.println("Done");
-    while(1){
-
-    }
+    LeftEncoder.reset();
+    RightEncoder.reset();
   }
-
 }
 
 void loop(){
-  delay(2000);
+  // delay(2000);
   // testMotor();
   testEncoder();
+  // testQTR();
+  delay(1000);
 }

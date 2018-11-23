@@ -1,7 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
-
-#include <arduino.h>
+#include "Arduino.h"
 
 //
 // Project
@@ -10,19 +9,23 @@
 #define PROJECT_BOARD           "Maple Mini"
 #define PROJECT_VERSION         "v0.0"
 
+
+// Interface
+#define PIN_BTN 32
+#define PIN_LED 33
+
 //
 // Serial DEBUG
 //
 #define LOG_ENABLED true
-#define LOG if(LOG_ENABLED) PC
-#define BT	Serial3
-#define PC	Serial
+#define LOG if(LOG_ENABLED) BT
 #define PC_SPEED  115200
 #define LOG_INTERVAL  0.01 //
 
 //
 // Bluetooth Configs (Type here)
 //
+#define BT Serial3
 #define BT_SPEED  115200
 #define BTRX  1
 #define BTTX  0
@@ -45,9 +48,18 @@
 
 
 //
-// Line Reader Settings
+// VBat Reader
 //
-#define BAT_SENSE_PIN 3   // AIN8
+#define PIN_BAT_SENSE 3   // AIN8
+#define BAT_R1                 22000
+#define BAT_R2                 10000
+#define BAT_DROP               0.04
+#define VBAT_VOLTAGE(adc)      (adc / (4096 / 3.3)) * (BAT_R1 + BAT_R2) * (1.0 / BAT_R2) + BAT_DROP
+
+#define VBAT_ALARMED           6.90
+#define VBAT_WARNED            7.10
+#define VBAT_USB               5.10
+
 //
 //Lap Sensor Settings
 //
@@ -76,22 +88,23 @@
 // Motors config (H-Bridge)
 //
 #define REVERSE 0.00
-#define PIN_M1_PWM  26
-#define PIN_M1_IN1  30
-#define PIN_M1_IN2  31
-#define PIN_M2_PWM  27
-#define PIN_M2_IN1  28
-#define PIN_M2_IN2  29
+#define PIN_M1_PWM  27
+#define PIN_M1_IN1  28
+#define PIN_M1_IN2  29
+#define PIN_M2_PWM  26
+#define PIN_M2_IN1  30
+#define PIN_M2_IN2  31
 
 //
 // Encoder config (Quadrature)
 //
-#define PULSES_PER_REV 179.0 // 30:1
+// #define PULSES_PER_REV 179.0 // 30:1 - X2_ENCODING
+#define PULSES_PER_REV 358.0 // 30:1 - X2_ENCODING
 // #define PULSES_PER_REV 61.0 // 10:1
-#define PIN_ENC1_A  20
-#define PIN_ENC1_B  19
-#define PIN_ENC2_A  21
-#define PIN_ENC2_B  22
+#define PIN_ENC1_A  21
+#define PIN_ENC1_B  22
+#define PIN_ENC2_A  20
+#define PIN_ENC2_B  19
 //#define M_PI 3.14159
 #define WHEEL_RADIUS 0.020  // D = 40mm
 #define WHEEL_PERIMETER (2.0*WHEEL_RADIUS*M_PI) // WHEEL_RADIUS * PI
