@@ -1,5 +1,6 @@
 
 #include "Encoder.h"
+#include "Motor.h"
 #include "_config.h"
 
 Motor LeftMotor(PIN_M1_PWM, PIN_M1_IN1, PIN_M1_IN2); // Left Motor
@@ -9,6 +10,11 @@ Encoder LeftEncoder(PIN_ENC1_A, PIN_ENC1_B, PULSES_PER_REV, WHEEL_RADIUS);
 Encoder RightEncoder(PIN_ENC2_A, PIN_ENC2_B, PULSES_PER_REV, WHEEL_RADIUS);
 
 bool AUTO = true; //change here to do test with your hands
+
+void setup(){
+	PC.begin(PC_SPEED);
+	BT.begin(BT_SPEED);
+}
 
 void testEncoder(){
 
@@ -64,4 +70,8 @@ void testEncoder(){
 
     }
 
+}
+
+void loop(){
+	testEncoder();
 }
