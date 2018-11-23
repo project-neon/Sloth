@@ -342,10 +342,10 @@ void testPID(){
 
 void loop(){
   // testMotor();
-  testEncoder(false);
+  // testEncoder(false);
   // testLineSensor();
   // testPID();
-  // followLine();
+  followLine();
   // delay(100);
 }
 
@@ -360,8 +360,8 @@ void followLine(){
 
   while(1){
     if (checkpoint_right_counter == 0) {
-      LeftEncoder.reset();
-      RightEncoder.reset();
+      // LeftEncoder.reset();
+      // RightEncoder.reset();
     }
 
     leftDistance = PULSES2DISTANCE(LeftEncoder.getPulses());
@@ -375,8 +375,9 @@ void followLine(){
 
     // Checks if medium lap time has been reached
     nowLapTimer = millis()/1000.0;
+    float laptime;
     if (nowLapTimer - startLapTimer > LAP_TIME && STOP_BY_TIME) {
-      startLapTimer = nowLapTimer;
+      // startLapTimer = nowLapTimer;
       robotstate = false; // Stop the robot
     }
 
@@ -388,19 +389,22 @@ void followLine(){
       LeftMotor.coast();
       RightMotor.coast();
 
-      // Stop the Lap Timer
-      startLapTimer = millis()/1000.0;
+
 
       // Print some data for statistics
       float laptime = nowLapTimer - startLapTimer;
       float mediumspeed = currentPosition / laptime;
       LOG.print("Time Lap: \t");       LOG.print(laptime);
+      LOG.print("s");
       LOG.print("\t");
       LOG.print("Track Length: \t ");  LOG.print(currentPosition);
+      LOG.print("m");
       LOG.print("\t");
       LOG.print("Medium Speed: \t ");  LOG.print(mediumspeed);
+      LOG.print("m/s");
       LOG.println();
-
+      // Stop the Lap Timer
+      startLapTimer = nowLapTimer;
       // Blink the LEDs
       while (!robotstate) {
         digitalWrite(PIN_LED, !digitalRead(PIN_LED));

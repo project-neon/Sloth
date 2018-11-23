@@ -8,7 +8,7 @@
 //
 #define PROJECT_NAME            "Sloth Firmware"
 #define PROJECT_BOARD           "Maple Mini"
-#define PROJECT_VERSION         "v0.0"
+#define PROJECT_VERSION         "v0.5"
 
 //
 // Serial DEBUG
@@ -64,11 +64,11 @@
 //
 // General Settings
 //
-#define STOP_BY_TIME false
-#define LAP_TIME 5 //in seconds
+#define STOP_BY_TIME true
+#define LAP_TIME 10 //in seconds
 #define STOP_BY_DISTANCE true
 #define FINAL_TARGET_POSITION   24.00  // in meters
-// #define FINAL_TARGET_POSITION   1.5
+// #define FINAL_TARGET_POSITION   1.0
 #define ACCELERATION_ENABLED false
 #define ACCELERATION_INTERVAL 0.01
 #define MAPPING_ENABLED false
