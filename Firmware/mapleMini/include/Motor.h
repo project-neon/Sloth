@@ -6,7 +6,7 @@
 class Motor {
     public:
         Motor(uint8_t pinPwm, uint8_t in1, uint8_t in2);
-        void speed(float speed);
+        void speed(char speed);
         void coast();
         void brake();     
     protected:

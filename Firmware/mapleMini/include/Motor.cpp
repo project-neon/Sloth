@@ -21,8 +21,8 @@ Motor::Motor(uint8_t pinPwm, uint8_t in1, uint8_t in2)
 	digitalWrite(_in2, 0);
 }
 
-void Motor::speed(float speed) {
-	float power = speed > 0 ? speed : -speed;
+void Motor::speed(char speed) {
+	char power = speed > 0 ? speed : -speed;
 	pwmWrite(_pinPwm, map(power, 0, 100, 0, 761));
     
 	digitalWrite(_in1, speed >=  0 ? 1 : 0);
