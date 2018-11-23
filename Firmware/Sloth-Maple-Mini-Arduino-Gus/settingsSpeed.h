@@ -1,8 +1,15 @@
 #include "_config.h"
-#include "main.h"
+#include "STRUCTURES.h"
 
 #ifndef SETTINGSSPEED_H
 #define SETTINGSSPEED_H
+
+float speedbase = 20;
+float kpdir = 0.022;
+float kidir = 0.0;
+float kddir = 0.0015;
+
+Setup Normal     = {speedbase, kpdir, kidir, kddir};
 
 Setup k0[] {
   // Target Speed, kp, ki, kd

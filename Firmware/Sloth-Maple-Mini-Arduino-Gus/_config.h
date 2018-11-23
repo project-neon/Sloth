@@ -65,11 +65,11 @@
 // General Settings
 //
 #define STOP_BY_TIME false
-#define LAP_TIME 20 //in seconds
+#define LAP_TIME 5 //in seconds
 #define STOP_BY_DISTANCE true
 #define FINAL_TARGET_POSITION   24.00  // in meters
 // #define FINAL_TARGET_POSITION   1.5
-#define ACCELERATION_ENABLED true
+#define ACCELERATION_ENABLED false
 #define ACCELERATION_INTERVAL 0.01
 #define MAPPING_ENABLED false
 #define FIRST_MARK_POSITION 0.5
@@ -82,6 +82,7 @@
 // Motors config (H-Bridge)
 //
 #define REVERSE 0.00
+#define MOTORS_ENABLE true
 #define PIN_M1_PWM  26
 #define PIN_M1_IN1  30
 #define PIN_M1_IN2  31
@@ -99,6 +100,7 @@
 #define PIN_ENC2_A  21
 #define PIN_ENC2_B  22
 //#define M_PI 3.14159
+#define POSITION_FIX  0
 #define WHEEL_RADIUS 0.020  // D = 40mm
 #define WHEEL_PERIMETER (2.0*WHEEL_RADIUS*M_PI) // WHEEL_RADIUS * PI
 #define PULSES2DISTANCE(p) (p / PULSES_PER_REV * WHEEL_PERIMETER)

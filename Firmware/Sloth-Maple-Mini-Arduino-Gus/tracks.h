@@ -1,11 +1,12 @@
+/*
+This file contains the tracks that the robot has already done.
+*/
+
 #include "_config.h"
 #include "settingsSpeed.h"
 
 #ifndef TRACKS_H
 #define TRACKS_H
-/*
-  This file contains the tracks that the robot has already done.
-*/
 
 Mark SMILE_2018[] = { // Distance in meters, Aceleration, Constants of gain (PID)
   {00.78, +1.5, GAIN_NUMBER[Straight]},
