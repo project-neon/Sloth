@@ -99,8 +99,8 @@ void setupPID(Setup setup){
 }
 
 void setupMarkSensors(){
-  attachInterrupt(digitalPinToInterrupt(PIN_TRACK_MARKING_RIGHT),checkpointSensorRightCallback, FALLING);
-  attachInterrupt(digitalPinToInterrupt(PIN_TRACK_MARKING_LEFT), checkpointSensorLeftCallback, FALLING);
+  // attachInterrupt(digitalPinToInterrupt(PIN_TRACK_MARKING_RIGHT),checkpointSensorRightCallback, FALLING);
+  // attachInterrupt(digitalPinToInterrupt(PIN_TRACK_MARKING_LEFT), checkpointSensorLeftCallback, FALLING);
 }
 
 void setupRobot(){
@@ -342,10 +342,10 @@ void testPID(){
 
 void loop(){
   // testMotor();
-  // testEncoder(false);
+  testEncoder(false);
   // testLineSensor();
   // testPID();
-  followLine();
+  // followLine();
   // delay(100);
 }
 
@@ -574,12 +574,14 @@ void followLine(){
         // LOG.print("\t ");
         // LOG.print(nowCps_right_led_timer - startCps_right_led_timer);
 
-        LOG.println();
-
-        // testEncoder(true);
+        // testEncoder(false);
         // testLineSensor();
         // testMotor();
         // testPID();
+
+        LOG.println();
+
+
         //END*/
         startLogTimer = nowLogTimer;
       }
