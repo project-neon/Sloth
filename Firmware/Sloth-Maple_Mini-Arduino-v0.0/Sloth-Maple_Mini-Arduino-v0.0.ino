@@ -1,27 +1,54 @@
 #include <Arduino.h>
 #include "config.h"
 #include "TB6612FNG.h"
+#include "QEI.h"
 
-TB6612FNG MotorDriver1(PIN_M1_PWM, PIN_M1_IN1, PIN_M1_IN2);
-TB6612FNG MotorDriver2(PIN_M2_PWM, PIN_M2_IN1, PIN_M2_IN2);
+
+// Encoders
+QEI LeftEncoder (PIN_ENC1_A, PIN_ENC1_B, NULL, PULSES_PER_REV); // Left Encoder
+QEI RightEncoder (PIN_ENC2_A, PIN_ENC2_B, NULL, PULSES_PER_REV); // Right Encoder
 
 void setup() {
   Serial.begin(115200);
+  setupEnc1();
+  setupEnc2();
 }
 
 void loop() {
-  Serial.println("Hello!");
+  Serial.print(LeftEncoder.getPulses());
+  Serial.print("\t");
+  Serial.print(RightEncoder.getPulses());
+  Serial.print("|\t");
+  Serial.print(LeftEncoder.getRevolutions());
+  Serial.print("\t");
+  Serial.print(RightEncoder.getRevolutions());
+  Serial.print("\n");
   delay(1000);
-  // MotorDriver1.pwm(0.75);
-  // MotorDriver2.pwm(0.75);
-  // delay(2000);
-  // MotorDriver1.brake();
-  // MotorDriver2.brake();
-  // delay(2000);
-  // MotorDriver1.pwm(-0.50);
-  // MotorDriver2.pwm(-0.50);
-  // delay(2000);
-  // MotorDriver1.coast();
-  // MotorDriver2.coast();
-  // delay(2000);
+}
+
+
+void enc1() {
+  LeftEncoder.encode();
+}
+
+void setupEnc1() {
+  //X2 encoding uses interrupts on only channel A.
+  attachInterrupt(digitalPinToInterrupt(PIN_ENC1_A), enc1, CHANGE);
+
+  //X4 encoding uses interrupts on      channel A,
+  //and on channel B.
+  attachInterrupt(digitalPinToInterrupt(PIN_ENC1_B), enc1, CHANGE);
+}
+
+void enc2() {
+  RightEncoder.encode();
+}
+
+void setupEnc2() {
+  //X2 encoding uses interrupts on only channel A.
+  attachInterrupt(digitalPinToInterrupt(PIN_ENC2_A), enc2, CHANGE);
+
+  //X4 encoding uses interrupts on      channel A,
+  //and on channel B.
+  attachInterrupt(digitalPinToInterrupt(PIN_ENC2_B), enc2, CHANGE);
 }
