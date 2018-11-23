@@ -28,10 +28,16 @@
 #define BTTX  0
 
 //
+// Interface
+//
+#define PIN_BTN 32
+#define PIN_LED 33
+
+//
 // Line Reader Settings
 //
 #define WHITE_LINE  true
-#define NUM_SENSORS 8  // number of sensors used
+#define NUM_SENSORS 6  // number of sensors used
 #define NUM_SAMPLES_PER_SENSOR  1  // average 4 analog samples per sensor reading
 #define EMITTER_PIN 12  // emitter is controlled by digital pin 2
 #define PIN_LR_S1 11  // AIN0

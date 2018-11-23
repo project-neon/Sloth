@@ -3,6 +3,7 @@
 // #include "Encoder.h"
 #include "_config.h"
 #include "QEI.h"
+#include "QTRSensors.h"
 
 Motor LeftMotor(PIN_M1_PWM, PIN_M1_IN1, PIN_M1_IN2);
 Motor RightMotor(PIN_M2_PWM, PIN_M2_IN1, PIN_M2_IN2);
@@ -10,15 +11,58 @@ Motor RightMotor(PIN_M2_PWM, PIN_M2_IN1, PIN_M2_IN2);
 QEI LeftEncoder(PIN_ENC1_A, PIN_ENC1_B, PULSES_PER_REV, WHEEL_RADIUS);
 QEI RightEncoder(PIN_ENC2_A, PIN_ENC2_B, PULSES_PER_REV, WHEEL_RADIUS);
 
+unsigned char pinsLineReader[NUM_SENSORS] = {
+	PIN_LR_S1,
+	PIN_LR_S2,
+	PIN_LR_S3,
+	PIN_LR_S4,
+	PIN_LR_S5,
+	PIN_LR_S6,
+	// PIN_LR_S7,
+	// PIN_LR_S8
+  };
+
+unsigned int sensorValues[NUM_SENSORS];
+
+QTRSensorsAnalog LineReader(pinsLineReader, NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, EMITTER_PIN);
+
+int linePosition;
+// Function to calibrate the line reader
+void lineReaderCalibrate() {
+
+  delay(2000);
+  LOG.print("Calibrating sensors...");
+  digitalWrite(PIN_LED, 1);
+  for (int i = 0; i < 1000; i++)
+    LineReader.calibrate(true);
+  LOG.println("Done.");
+  delay(2000);
+  digitalWrite(PIN_LED, 0);
+  //
+  // for (int i = 0; i < NUM_SENSORS; i++)
+  //   LOG.printf("Min: %4i \t", LineReader.calibratedMinimumOn[i]);
+  //
+  // LOG.printf("%s", "\n");
+  //
+  // for (int i = 0; i < NUM_SENSORS; i++)
+  //   LOG.printf("Max: %4i \t", LineReader.calibratedMaximumOn[i]);
+
+  // LOG.printf("%s", "\n");
+}
+
+
+
 void setup(){
   PC.begin(PC_SPEED);
   BT.begin(BT_SPEED);
   LOG.println("Starting Test Motor");
   setupLeftEncoder();
   setupRightEncoder();
+  lineReaderCalibrate();
 }
 
 
+//TEST MOTORS
 void testMotor(){
 
     LOG.println("Test Left in 25%");
@@ -80,9 +124,6 @@ void testMotor(){
 }
 
 //TEST ENCODER
-
-bool AUTO_ENCODER = true; //change here to do test with your hands
-
 void leftEncoder() {
   LeftEncoder.encode();
 }
@@ -109,7 +150,7 @@ void setupRightEncoder() {
   attachInterrupt(digitalPinToInterrupt(PIN_ENC2_B), rightEncoder, CHANGE);
 }
 
-void testEncoder(){
+void testEncoder(bool AUTO_ENCODER){
 
     LOG.println("Starting Test Encoder");
     delay(500);
@@ -162,10 +203,23 @@ void testEncoder(){
   }
 }
 
+void testLineSensor(){
+// Certifies correct operation of line sensors
+  LineReader.read(sensorValues, QTR_EMITTERS_ON);
+   for (int i = 0; i < NUM_SENSORS; i++) {
+    LOG.print(sensorValues[i]);
+    LOG.print("\t");
+  }
+  // Position of the line: (left)-2500 to 2500(right)
+  linePosition = LineReader.readLine(sensorValues, QTR_EMITTERS_OFF, WHITE_LINE)- ((NUM_SENSORS-1)*500);
+  LOG.println(linePosition);
+
+
+}
 void loop(){
   // delay(2000);
   // testMotor();
-  testEncoder();
-  // testQTR();
-  delay(1000);
+  // testEncoder(True);
+  testLineSensor();
+  delay(100);
 }
