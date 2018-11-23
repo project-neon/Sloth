@@ -28,10 +28,10 @@ DigitalOut leds[4] = {
 };
 
 // Motors
-Motor LeftMotor(PIN_M1_EN, PIN_M1_IN1, PIN_M1_IN2); // Lefut Motor
+Motor LeftMotor(PIN_M1_EN, PIN_M1_IN1, PIN_M1_IN2); // Left Motor
 Motor RightMotor(PIN_M2_EN, PIN_M2_IN1, PIN_M2_IN2); // Right Motor
 float leftmotorspeed = 0.0;
-float righmotorspeed = 0.0;
+float rightmotorspeed = 0.0;
 float currentSpeed = 0.0;
 float targetSpeed = 0.0;
 float acceleration = 0.0;
@@ -74,22 +74,39 @@ int crossroad_counter = 0;
 
 bool robotstate = true;
 bool readyStatus = true;
-bool motorsEnable=true;
+// bool motorsEnable=false;
 
 //PID
 float directiongain = 0.0;
 PID directioncontrol(0, 0, 0);
 
 
-// float speedbase = 0.30;
-// float kpdir = 0.00020;
+float speedbase = 0.50;
+float kpdir = 0.0002;
+float kidir = 0.000000;
+float kddir = 0.0000035;
+
+// float speedbase = 0.40;
+// float kpdir = 0.00030;
 // float kidir = 0.000000;
 // float kddir = 0.0000035;
 
-float speedbase = 0.3;
-float kpdir = 1.0;
-float kidir = 0.0000000;
-float kddir = 0.075;
+
+// float speedbase = 0.4;
+// float kpdir = 0.3;
+// float kidir = 0.0000000;
+// float kddir = 0.1;
+
+
+// float speedbase = 1.0;
+// float kpdir = 0.510;
+// float kidir = 0.0000000;
+// float kddir = 0.070;
+
+// float speedbase = 0.15;
+// float kpdir = 0.25;
+// float kidir = 0.0000000;
+// float kddir = 0.060;
 
 Setup Normal     = {speedbase, kpdir, kidir, kddir};
 
@@ -258,13 +275,17 @@ int main() {
     // Get currrent position by encoders and convert to meters
 
     if (checkpoint_right_counter == 0) {
+      // if (currentPosition<0.5 ) {
       LeftEncoder.reset();
       RightEncoder.reset();
+      // LapTimer.reset();
     }
+
 
     leftDistance = PULSES2DISTANCE(LeftEncoder.getPulses());
     rightDistance = PULSES2DISTANCE(RightEncoder.getPulses());
-    currentPosition = AVG(leftDistance, rightDistance) + POSITION_FIX; //get average
+    // currentPosition = AVG(leftDistance,rightDistance);// + POSITION_FIX; //get average
+    currentPosition = leftDistance;// + POSITION_FIX; //get average
 
     // Check if the robot complete the track
     if (currentPosition >= FINAL_TARGET_POSITION && STOP_BY_DISTANCE) {
@@ -334,6 +355,7 @@ int main() {
       // Check if changed mark
       if (currentPosition >= TargetMark.position && MAPPING_ENABLED) {
         currentMark++;
+        leds[1] = !leds[1];
         // Get current Target Mark
         TargetMark = TRACK_EVENT_NAME[currentMark];
         acceleration = TargetMark.acceleration;
@@ -342,7 +364,7 @@ int main() {
       }
 
       // Position of the line: (left)-2500 to 2500(right)
-      linePosition = (float)(LineReader.readLine(sensorvalues, QTR_EMITTERS_ON, WHITE_LINE) - 2500.0)/2500.0;
+      linePosition = (float)(LineReader.readLine(sensorvalues, QTR_EMITTERS_ON, WHITE_LINE) - 2500.0);///2500.0;
 
       directioncontrol.setProcessValue(linePosition);
       directiongain = directioncontrol.compute();
@@ -362,17 +384,50 @@ int main() {
       }
 
       // Set the Direction
-      leftmotorspeed = currentSpeed + (directiongain > 0 ? -directiongain : 0);
-      righmotorspeed = currentSpeed + (directiongain < 0 ? +directiongain : 0);
+/*
+      if (directiongain > 0) { // Left curve
+        if (directiongain < currentSpeed) {
+          leftmotorspeed = currentSpeed - (directiongain/2);
+          rightmotorspeed = currentSpeed + (directiongain/2);
+        }
+        else {
+          rightmotorspeed = directiongain - REVERSE;
+          leftmotorspeed = - REVERSE;
+        }
+      }
+
+      else if (directiongain < 0) { // Right curve
+        if (-directiongain < currentSpeed) {
+          leftmotorspeed = currentSpeed - (directiongain/2);
+          rightmotorspeed = currentSpeed + (directiongain/2);
+        }
+        else {
+          leftmotorspeed = - directiongain - REVERSE;
+          rightmotorspeed = - REVERSE;
+        }
+      } else { // Straight
+        leftmotorspeed = currentSpeed;
+        rightmotorspeed = currentSpeed;
+      }
+*/
+
+      // leftmotorspeed = currentSpeed + (directiongain > 0 ? - directiongain : + directiongain - currentSpeed);
+      // rightmotorspeed = currentSpeed + (directiongain < 0 ? + directiongain : - directiongain + currentSpeed);
+
+      leftmotorspeed = currentSpeed + (directiongain > 0 ? - directiongain : 0);
+      rightmotorspeed = currentSpeed + (directiongain < 0 ? + directiongain : 0);
+
+      // leftmotorspeed  = 0.1;
+      // rightmotorspeed = 0.1;
 
       // Constrain the speed value to [0.0, 1.0] interval
       leftmotorspeed = leftmotorspeed > 1.0 ? 1.0 : leftmotorspeed < -REVERSE ? -REVERSE : leftmotorspeed;
-      righmotorspeed = righmotorspeed > 1.0 ? 1.0 : righmotorspeed < -REVERSE ? -REVERSE : righmotorspeed;
+      rightmotorspeed = rightmotorspeed > 1.0 ? 1.0 : rightmotorspeed < -REVERSE ? -REVERSE : rightmotorspeed;
 
       // LOG.printf("PID is working? %f \n", directiongain);
       if(motorsEnable){
         LeftMotor.speed(leftmotorspeed);
-        RightMotor.speed(righmotorspeed);
+        RightMotor.speed(rightmotorspeed);
       }
 
     // Test Motors
@@ -399,21 +454,21 @@ int main() {
       // LineReader.read(sensorvalues, QTR_EMITTERS_ON);
       //  for (int i = 0; i < 6; i++)
       //   LOG.printf("%i \t", sensorvalues[i]);
-      // LOG.printf("Line: %i \t", linePosition);
+      // LOG.printf("%.2f \t", linePosition);
 
       // LOG.printf("Mark: %i \t", MarksensorTest.read());
 
 
      // Certifies correct operation of encoders
-     // LOG.printf("Left Encoder: %i \t", LeftEncoder.getPulses());
-     // LOG.printf("Right Encoder: %i \t", RightEncoder.getPulses());
+     LOG.printf("Left Encoder: %i \t", LeftEncoder.getPulses());
+     LOG.printf("Right Encoder: %i \t", RightEncoder.getPulses());
      // LOG.printf("%.4f\t", leftDistance);
      // LOG.printf("%.4f\t", rightDistance);
 
      // Certifies correct operation of motors
-     // LOG.printf("PID is working? %f \n", directiongain);
-     // LOG.printf("%.2f\t", leftmotorspeed);
-     // LOG.printf("%.2f\t", righmotorspeed);
+     // LOG.printf("%.2f \t", directiongain);
+     // LOG.printf("%.2f \t", leftmotorspeed);
+     // LOG.printf("%.2f \t", rightmotorspeed);
 
       // Manual Track Mapping
       // LOG.printf("%.2f,", LapTimer.read());
@@ -422,7 +477,7 @@ int main() {
 
       // LOG.printf("%.4f,", currentPosition);
       // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
-
+/*
       // Checkpoint sensors mapping
       // Crossroad
       if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
@@ -446,9 +501,9 @@ int main() {
       }
 
       // Encoders positions
-      LOG.printf("%.2f,", leftDistance);
-      LOG.printf("%.2f", rightDistance);
-
+      // LOG.printf("%.2f,", leftDistance);
+      // LOG.printf("%.2f", rightDistance);
+*/
 
       // LOG.printf("%i", checkpoint_right_counter);
       //Test of Mapping

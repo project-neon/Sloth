@@ -14,7 +14,7 @@
 #define LOG_ENABLED false
 #define LOG if(LOG_ENABLED) BT
 #define PC_SPEED  115200
-#define LOG_INTERVAL  0.01 //
+#define LOG_INTERVAL  0.1 //
 
 //
 // Bluetooth Configs (Type here)
@@ -48,10 +48,11 @@
 // General Settings
 //
 #define STOP_BY_TIME false
-#define LAP_TIME 5 //in seconds
+#define LAP_TIME 10 //in seconds
 #define STOP_BY_DISTANCE true
 // #define FINAL_TARGET_POSITION   24.0  // in meters
-#define FINAL_TARGET_POSITION   6.4
+// #define FINAL_TARGET_POSITION   2.60
+#define FINAL_TARGET_POSITION   22.5
 #define ACCELERATION_ENABLED true
 #define ACCELERATION_INTERVAL 0.01
 #define MAPPING_ENABLED true
@@ -64,7 +65,7 @@
 //
 // Motors config (H-Bridge)
 //
-#define REVERSE	0.01
+#define REVERSE	0.00
 #define PIN_M2_EN   p21
 #define PIN_M2_IN1  p22
 #define PIN_M2_IN2  p23
@@ -72,15 +73,16 @@
 #define PIN_M1_IN1  p24
 #define PIN_M1_IN2  p25
 
+bool motorsEnable = true;
 //
 // Encoder config (Quadrature)
 //
-// #define PULSES_PER_REV 179.0 // 30:1
-#define PULSES_PER_REV 59.0 // 10:1
+#define PULSES_PER_REV 179.0 // 30:1
+// #define PULSES_PER_REV 59.0 // 10:1
 #define PIN_ENC1_A  p27
 #define PIN_ENC1_B	p28
-#define PIN_ENC2_A	p30
-#define PIN_ENC2_B	p29
+#define PIN_ENC2_A	p6
+#define PIN_ENC2_B	p7
 //#define M_PI 3.14159
 #define WHEEL_RADIUS 0.016	// D = 32mm
 #define WHEEL_PERIMETER	(2.0*WHEEL_RADIUS*M_PI)	// WHEEL_RADIUS * PI
@@ -97,7 +99,7 @@
 #define Straight  3
 #define Stop      4
 
-#define TRACK_EVENT_NAME HACKPULICA_NORMAL_10_1
-#define GAIN_NUMBER k4_M10_1
+#define TRACK_EVENT_NAME WC14_2018_LEFT_MOTORS
+#define GAIN_NUMBER k3
 
 #endif
