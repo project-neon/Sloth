@@ -9,12 +9,13 @@ float speedbase = 20;
 // float kidir = 0.0;
 // float kddir = 0.0015;
 
-float kpdir = 2.2;
+float kpdir = 2.0;
 float kidir = 0.0;
 float kddir = 0.0;
 
+#define CONSTANTE 1000
 
-Setup Normal     = {speedbase, kpdir, kidir, kddir};
+Setup Normal     = {speedbase, kpdir/CONSTANTE, kidir/CONSTANTE, kddir/CONSTANTE};
 
 Setup k0[] {
   // Target Speed, kp, ki, kd

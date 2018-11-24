@@ -8,15 +8,21 @@
 
 #include "tracks.h"
 
+
+// SoftwareSerial BT(BTRX, BTTX); // RX, TX
+
+
 // #include "QTR.h"
+byte rcvd=0;
 
 Motor LeftMotor(PIN_M1_PWM, PIN_M1_IN1, PIN_M1_IN2);
 Motor RightMotor(PIN_M2_PWM, PIN_M2_IN1, PIN_M2_IN2);
-int leftmotorspeed = 0;
-int righmotorspeed = 0;
-int currentSpeed = 0;
-int targetSpeed = 0;
-int acceleration = 0;
+float leftmotorspeed = 0;
+float righmotorspeed = 0;
+float currentSpeed = 0;
+float targetSpeed = 0;
+float acceleration = 0;
+bool MOTORS_ENABLE = true;
 
 QEI LeftEncoder(PIN_ENC1_A, PIN_ENC1_B, PULSES_PER_REV, WHEEL_RADIUS);
 QEI RightEncoder(PIN_ENC2_A, PIN_ENC2_B, PULSES_PER_REV, WHEEL_RADIUS);
@@ -33,8 +39,8 @@ unsigned char pinsLineReader[NUM_SENSORS] = {
 	PIN_LR_S4,
 	PIN_LR_S5,
 	PIN_LR_S6,
-	// PIN_LR_S7,
-	// PIN_LR_S8
+	PIN_LR_S7,
+	PIN_LR_S8
   };
 
 unsigned int sensorValues[NUM_SENSORS];
@@ -99,8 +105,8 @@ void setupPID(Setup setup){
 }
 
 void setupMarkSensors(){
-  // attachInterrupt(digitalPinToInterrupt(PIN_TRACK_MARKING_RIGHT),checkpointSensorRightCallback, FALLING);
-  // attachInterrupt(digitalPinToInterrupt(PIN_TRACK_MARKING_LEFT), checkpointSensorLeftCallback, FALLING);
+  attachInterrupt(digitalPinToInterrupt(PIN_TRACK_MARKING_RIGHT),checkpointSensorRightCallback, FALLING);
+  attachInterrupt(digitalPinToInterrupt(PIN_TRACK_MARKING_LEFT), checkpointSensorLeftCallback, FALLING);
 }
 
 void setupRobot(){
@@ -146,6 +152,8 @@ void setup(){
   LOG.println(PROJECT_NAME);
   LOG.println(PROJECT_BOARD);
   LOG.println(PROJECT_VERSION);
+	pinMode(PIN_LED, OUTPUT);
+	// attachInterrupt(digitalPinToInterrupt(BTRX), btcallback,RISING);
   setupLeftEncoder();
   setupRightEncoder();
   setupMarkSensors();
@@ -256,6 +264,10 @@ void testEncoder(bool AUTO_ENCODER){
         LOG.print("Right: ");
         LOG.print("\t");
         LOG.print(RightEncoder.getPulses());
+				// LOG.print("\t ");
+				// LOG.print(leftDistance);
+				// LOG.print("\t ");
+				// LOG.print(rightDistance);
         LOG.println();
         delay(100);
     }
@@ -304,8 +316,9 @@ void setupLineReader() {
   for (int i = 0; i < 1000; i++)
     LineReader.calibrate(true);
   LOG.println("Done.");
-  delay(2000);
-  digitalWrite(PIN_LED, 0);
+	delay(1000);
+	digitalWrite(PIN_LED, 0);
+	delay(2000);
   //
   // for (int i = 0; i < NUM_SENSORS; i++)
   //   LOG.printf("Min: %4i \t", LineReader.calibratedMinimumOn[i]);
@@ -326,27 +339,129 @@ void testLineSensor(){
     LOG.print("\t");
   }
   // Position of the line: (left)-2500 to 2500(right)
-  linePosition = LineReader.readLine(sensorValues, QTR_EMITTERS_OFF, WHITE_LINE) - ((NUM_SENSORS-1)*500);
+  linePosition = LineReader.readLine(sensorValues, QTR_EMITTERS_OFF, WHITE_LINE) - ((NUM_SENSORS-1)*FIX_MAX_ANALOG_READ/2);
   LOG.println(linePosition);
 }
 
 void testPID(){
-  LineReader.read(sensorValues, QTR_EMITTERS_ON);
-  linePosition = LineReader.readLine(sensorValues, QTR_EMITTERS_OFF, WHITE_LINE) - ((NUM_SENSORS-1)*500);
+  LineReader.readCalibrated(sensorValues, QTR_EMITTERS_ON);
+  linePosition = LineReader.readLine(sensorValues, QTR_EMITTERS_OFF, WHITE_LINE) - ((NUM_SENSORS-1)*FIX_MAX_ANALOG_READ/2);
   directioncontrol.setProcessValue(linePosition);
   directiongain = directioncontrol.compute();
   LOG.print("Gain of PID: \t");
-  LOG.println(directiongain);
+  LOG.print(directiongain);
+	LOG.print("\t ");
+	LOG.print(leftmotorspeed);
+	LOG.print("\t ");
+	LOG.print("\t");
+	LOG.print(righmotorspeed);
+	LOG.print("\t ");
+	LOG.print(targetSpeed);
 
+}
+
+void testMarkSensors(){
+	LOG.print("Left: \t");
+	LOG.print(checkpoint_left_counter);
+	LOG.print("\t");
+	LOG.print("Right: \t");
+	LOG.println(checkpoint_right_counter);
+}
+
+void testMarkProtocol(){
+	// LOG.print(leftDistance);
+	// LOG.print("\t ");
+	// LOG.print(rightDistance);
+	// LOG.print("\t ");
+	// LOG.print(currentPosition);
+	// LOG.print("\t ");
+	// LOG.print(TargetMark.position);
+	// LOG.print("\t ");
+	// LOG.print(currentMark);
+	// LOG.print("\t ");
+}
+
+void manualTrackMapping(){
+	// Manual Track Mapping
+	 // LOG.printf("%.2f,", LapTimer.read());
+	 // LOG.printf("%i,", currentMark);
+	 // LOG.printf("%i", linePosition);
+
+	 // LOG.printf("%.4f,", currentPosition);
+	 // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
+	 // manualTrackMapping();
+	 // START
+	 // Checkpoint sensors mapping
+	 // Crossroad
+	 if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
+		 crossroad_counter++;
+		 LOG.print("C,");
+		 LOG.print(crossroad_counter);
+		 LOG.print(",");
+		 checkpoint_left_counter--;
+		 checkpoint_right_counter--;
+	 }
+	 // Curve start/end marks
+	 else if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter == last_checkpoint_right_counter) {
+		 LOG.print("L,");
+		 LOG.print(checkpoint_left_counter);
+		 LOG.print(",");
+		 last_checkpoint_left_counter = checkpoint_left_counter;
+	 }
+	 // Start/Finish marks
+	 else if (checkpoint_left_counter == last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
+		 LOG.print("R,");
+		 LOG.print(checkpoint_right_counter);
+		 LOG.print(",");
+		 last_checkpoint_right_counter = checkpoint_right_counter;
+	 }
+	 else {
+		 LOG.print("-,-,");
+	 }
+	 // Encoders positions
+	 LOG.print(",");
+	 LOG.print(leftDistance);
+	 LOG.print(",");
+	 LOG.print(rightDistance);
+}
+
+void btcallback() {
+	while(BT.available()>0){
+		rcvd = BT.read();
+	}
+	BT.println("TEST BT - CALLBACK");
+  switch (rcvd) {
+    case 'G':
+      robotstate = true;
+      // robotstate = true;
+      LOG.println("Robot will Start in 2s");
+      LeftEncoder.reset();
+      RightEncoder.reset();
+      delay(2000);
+      break;
+    case 'S':
+      robotstate = false;
+      // robotstate = true;
+      LOG.println("Robot Paused");
+      break;
+    case 'M':
+      MOTORS_ENABLE = !MOTORS_ENABLE;
+      // robotstate = true;
+      LOG.println("Motors state changed");
+      break;
+  }
 }
 
 void loop(){
   // testMotor();
   // testEncoder(false);
-  testLineSensor();
+  // testLineSensor();
   // testPID();
-  // followLine();
-  // delay(100);
+	// testMarkSensors();
+  followLine();
+	// BT.println("BT A");
+	// PC.println("PC A");
+	// delay(100);
 }
 
 void followLine(){
@@ -359,6 +474,10 @@ void followLine(){
   startCps_right_led_timer = millis()/1000.0; // Acceleration interval
 
   while(1){
+
+		if(BT.available()>0){
+			btcallback();
+		}
     if (checkpoint_right_counter == 0) {
       // LeftEncoder.reset();
       // RightEncoder.reset();
@@ -474,52 +593,11 @@ void followLine(){
       }
 
       nowLogTimer = millis()/1000.0;
+
       if (nowLogTimer - startLogTimer > LOG_INTERVAL && LOG_ENABLED) {
-        // Certifies correct operation of encoders
-        // LOG.print(LeftEncoder.getPulses());
-        // LOG.print("\t ");
-        // LOG.print(RightEncoder.getPulses());
-        // LOG.print("\t ");
-        // LOG.print(leftDistance);
-        // LOG.print("\t ");
-        // LOG.print(rightDistance);
-        // LOG.print("\t ");
-        // LOG.print(currentPosition);
-        // LOG.print("\t ");
-        // LOG.print(TargetMark.position);
-        // LOG.print("\t ");
-        // LOG.print(currentMark);
-        // LOG.print("\t ");
-
-        // Certifies correct operation of line sensors
-        // LineReader.read(sensorvalues, QTR_EMITTERS_ON);
-        //  for (int i = 0; i < 6; i++) {
-        //   LOG.printf("%i \t", sensorvalues[i]);
-        // }
-        // LOG.printf("%i \n", linePosition);
-
-        // LOG.printf("Mark: %i \t", MarksensorTest.read());
 
 
-       // Certifies correct operation of encoders
-       // LOG.printf("Left Encoder: %i \t", LeftEncoder.getPulses());
-       // LOG.printf("Right Encoder: %i \t", RightEncoder.getPulses());
-       // LOG.printf("%.4f\t", leftDistance);
-       // LOG.printf("%.4f\t", rightDistance);
-
-       // Certifies correct operation of motors
-       // LOG.print("PID is working? \t");
-       // LOG.print(directiongain);
-       // LOG.print("\t ");
-       // LOG.print("\t");
-       // LOG.print(leftmotorspeed);
-       // LOG.print("\t ");
-       // LOG.print("\t");
-       // LOG.print(righmotorspeed);
-       // LOG.print("\t ");
-       // LOG.print(targetSpeed);
-
-        // Manual Track Mapping
+       // Manual Track Mapping
         // LOG.printf("%.2f,", LapTimer.read());
         // LOG.printf("%i,", currentMark);
         // LOG.printf("%i", linePosition);
@@ -527,46 +605,13 @@ void followLine(){
         // LOG.printf("%.4f,", currentPosition);
         // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
 
-        // START
-        // Checkpoint sensors mapping
-        // Crossroad
-        /*
-        if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
-          crossroad_counter++;
-          LOG.print("C,");
-          LOG.print(crossroad_counter);
-          LOG.print(",");
-          checkpoint_left_counter--;
-          checkpoint_right_counter--;
-        }
-        // Curve start/end marks
-        else if (checkpoint_left_counter != last_checkpoint_left_counter && checkpoint_right_counter == last_checkpoint_right_counter) {
-          LOG.print("L,");
-          LOG.print(checkpoint_left_counter);
-          LOG.print(",");
-          last_checkpoint_left_counter = checkpoint_left_counter;
-        }
-        // Start/Finish marks
-        else if (checkpoint_left_counter == last_checkpoint_left_counter && checkpoint_right_counter != last_checkpoint_right_counter) {
-          LOG.print("R,");
-          LOG.print(checkpoint_right_counter);
-          LOG.print(",");
-          last_checkpoint_right_counter = checkpoint_right_counter;
-        }
-        else {
-          LOG.print("-,-,");
-        }
-*/
-        // Encoders positions
-        // LOG.print(",");
-        // LOG.print(leftDistance);
-        // LOG.print(",");
-        // LOG.print(rightDistance);
-
-        // LOG.printf("%i", checkpoint_right_counter);
-        //Test of Mapping
-        // LOG.printf("CurrentPosition: %.2f \t", currentPosition);
-        // LOG.printf("CurrentSpeed: %.2f \t", TargetMark.setup.speed);
+				// manualTrackMapping();
+				// testEncoder(false);
+				// testLineSensor();
+				// testMotor();
+				// testPID();
+				// testMarkSensors();
+				// testMarkProtocol();
 
         // LOG.print(nowAccTimer - startAccTimer);
         // LOG.print("\t ");
@@ -578,13 +623,10 @@ void followLine(){
         // LOG.print("\t ");
         // LOG.print(nowCps_right_led_timer - startCps_right_led_timer);
 
-        // testEncoder(false);
-        // testLineSensor();
-        // testMotor();
-        // testPID();
 
         LOG.println();
 
+				// BT.println("TEST BT - MAIN");
 
         //END*/
         startLogTimer = nowLogTimer;

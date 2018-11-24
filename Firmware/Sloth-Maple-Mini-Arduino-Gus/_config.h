@@ -37,7 +37,7 @@
 // Line Reader Settings
 //
 #define WHITE_LINE  true
-#define NUM_SENSORS 6  // number of sensors used
+#define NUM_SENSORS 8  // number of sensors used
 #define NUM_SAMPLES_PER_SENSOR  1  // average 4 analog samples per sensor reading
 #define EMITTER_PIN 12  // emitter is controlled by digital pin 2
 #define PIN_LR_S1 11  // AIN0
@@ -58,13 +58,13 @@
 //Lap Sensor Settings
 //
 #define CROSS_COUNTER 6
-#define PIN_TRACK_MARKING_RIGHT 13
-#define PIN_TRACK_MARKING_LEFT  14
+#define PIN_TRACK_MARKING_LEFT  15
+#define PIN_TRACK_MARKING_RIGHT 16
 
 //
 // General Settings
 //
-#define STOP_BY_TIME true
+#define STOP_BY_TIME false
 #define LAP_TIME 15 //in seconds
 #define STOP_BY_DISTANCE true
 #define FINAL_TARGET_POSITION   24.00  // in meters
@@ -82,7 +82,7 @@
 // Motors config (H-Bridge)
 //
 #define REVERSE 0.00
-#define MOTORS_ENABLE true
+// #define MOTORS_ENABLE true
 #define PIN_M1_PWM  26
 #define PIN_M1_IN1  30
 #define PIN_M1_IN2  31
