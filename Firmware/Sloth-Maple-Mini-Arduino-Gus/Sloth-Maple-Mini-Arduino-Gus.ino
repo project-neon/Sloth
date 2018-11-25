@@ -8,27 +8,11 @@
 
 #include "tracks.h"
 
-
-// SoftwareSerial BT(BTRX, BTTX); // RX, TX
-
-
 // #include "QTR.h"
+
+
 byte rcvd=0;
 
-
-// float speedbase = 50;
-// float kpdir = 20.0;
-// float kidir = 0.0;
-// float kddir = 2.0;
-
-float speedbase = 50;
-float kpdir = 20.0;
-float kidir = 0.0;
-float kddir = 3.10;
-
-#define CONSTANTE 1000
-
-Setup Normal     = {speedbase, kpdir, kidir, kddir};
 
 Motor LeftMotor(PIN_M1_PWM, PIN_M1_IN1, PIN_M1_IN2);
 Motor RightMotor(PIN_M2_PWM, PIN_M2_IN1, PIN_M2_IN2);

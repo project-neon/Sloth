@@ -4,14 +4,14 @@
 #ifndef SETTINGSSPEED_H
 #define SETTINGSSPEED_H
 
-// float speedbase = 20;
-// float kpdir = 2.0;
-// float kidir = 0.0;
-// float kddir = 0.0;
-//
-// #define CONSTANTE 1000
+float speedbase = 50;
+float kpdir = 20.0;
+float kidir = 0.0;
+float kddir = 3.10;
 
-// Setup Normal     = {speedbase, kpdir/CONSTANTE, kidir/CONSTANTE, kddir/CONSTANTE};
+#define CONSTANTE 1000
+
+Setup Normal     = {speedbase, kpdir, kidir, kddir};
 
 Setup PD0[] {
   // Target Speed, kp, ki, kd
