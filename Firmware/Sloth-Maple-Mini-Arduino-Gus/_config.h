@@ -93,8 +93,8 @@
 //
 // Encoder config (Quadrature)
 //
-#define PULSES_PER_REV 179.0 // 30:1
-// #define PULSES_PER_REV 61.0 // 10:1
+// #define PULSES_PER_REV 179.0 // 30:1 - X2_ENCODING
+#define PULSES_PER_REV 358.0 // 30:1 - X4_ENCODING
 #define PIN_ENC1_A  20
 #define PIN_ENC1_B  19
 #define PIN_ENC2_A  21
