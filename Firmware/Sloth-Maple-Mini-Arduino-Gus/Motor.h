@@ -1,4 +1,4 @@
-#include <arduino.h>
+#include <Arduino.h>
 #ifndef Motor_h
 #define Motor_h
 

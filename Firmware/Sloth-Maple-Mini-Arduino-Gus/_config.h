@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include <arduino.h>
+#include <Arduino.h>
 
 //
 // Project
@@ -13,7 +13,7 @@
 //
 // Serial DEBUG
 //
-#define LOG_ENABLED false
+#define LOG_ENABLED true
 #define LOG if(LOG_ENABLED) BT
 #define BT	Serial3
 #define PC	Serial
@@ -67,11 +67,11 @@
 #define STOP_BY_TIME true
 #define LAP_TIME 500 //in seconds
 #define STOP_BY_DISTANCE true
-#define FINAL_TARGET_POSITION   12.5  // in meters
+#define FINAL_TARGET_POSITION   50  // in meters
 // #define FINAL_TARGET_POSITION   1.0
 #define ACCELERATION_ENABLED true
 #define ACCELERATION_INTERVAL 0.01
-#define MAPPING_ENABLED true
+#define MAPPING_ENABLED false
 #define FIRST_MARK_POSITION 0.5
 
 //

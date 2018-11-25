@@ -1,5 +1,5 @@
 #include "_config.h"
-#include "STRUCTURES.h"
+#include "structures.h"
 
 #ifndef SETTINGSSPEED_H
 #define SETTINGSSPEED_H
