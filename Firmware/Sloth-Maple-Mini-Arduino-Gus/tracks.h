@@ -6,6 +6,29 @@
 /*
   This file contains the tracks that the robot has already done.
 */
+Mark TECH_CHALLENGE[] = { // Distance in meters, Aceleration, Constants of gain (PID)
+  {00.30-OFFSET_ACELERATION, +5.00, GAIN_NUMBER[Straight]},   // 1 - 00.30
+  {00.70+OFFSET_DESACELERATION, -5.00, GAIN_NUMBER[Curve]},      // 2 - 00.70
+  {02.05-OFFSET_ACELERATION, +5.00, GAIN_NUMBER[Straight]},   // 3 - 02.05
+  {02.70+OFFSET_DESACELERATION, -5.00, GAIN_NUMBER[Curve]},      // 4 - 02.70
+  {04.00-OFFSET_ACELERATION, +5.00, GAIN_NUMBER[Straight]},   // 5 - 04.00
+  {04.60+OFFSET_DESACELERATION, -5.00, GAIN_NUMBER[Curve]},      // 6 - 04.60
+  {05.55-OFFSET_ACELERATION, +5.00, GAIN_NUMBER[Straight]},   // 7 - 05.55
+  {06.55+OFFSET_DESACELERATION, -5.00, GAIN_NUMBER[FastCurve]},  // 8 - 06.55
+  {07.80-OFFSET_ACELERATION, +5.00, GAIN_NUMBER[Straight]},   // 9 - 07.80
+  {08.20+OFFSET_DESACELERATION, -5.00, GAIN_NUMBER[FastCurve]},//10 - 08.20
+  {09.00-OFFSET_ACELERATION, +5.00, GAIN_NUMBER[Straight]},//11 - 09.00
+  {10.00+OFFSET_DESACELERATION, -5.00, GAIN_NUMBER[FastCurve]},// 12 - 10.00
+  {10.30-OFFSET_ACELERATION, +5.00, GAIN_NUMBER[Straight]},//13 - 10.30
+  {10.70+OFFSET_DESACELERATION, -5.00, GAIN_NUMBER[Curve]},//14 - 10.70
+  {11.15-OFFSET_ACELERATION, +5.00, GAIN_NUMBER[Straight]},//15 - 11.15
+  {11.70+OFFSET_DESACELERATION, -5.00, GAIN_NUMBER[Curve]},//16 - 11.70
+  {12.70-OFFSET_ACELERATION, +5.00, GAIN_NUMBER[FastCurve]},//17 - 12.70
+
+  {FINAL_TARGET_POSITION, +5.0, GAIN_NUMBER[Straight]}
+
+  // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
+};
 
 Mark HACKPULICA_RETAS[] = { // Distance in meters, Aceleration, Constants of gain (PID)
   {2.3, +5.0, GAIN_NUMBER[Straight]},
@@ -33,23 +56,23 @@ Mark HACKPULICA_NORMAL_NEW[] = { // Distance in meters, Aceleration, Constants o
 };
 
 Mark SMILE_2018[] = { // Distance in meters, Aceleration, Constants of gain (PID)
-  {00.78, +1.5, GAIN_NUMBER[Straight]},
-  {01.2, -2, GAIN_NUMBER[Curve]},
-  {02.60, +1.0, GAIN_NUMBER[Straight]},
-  {03.2, -1.0, GAIN_NUMBER[Curve]},
-  {04.6, +1.0, GAIN_NUMBER[Straight]},
-  {05.25, -1.0, GAIN_NUMBER[Curve]},
-  {06.0, +1.0, GAIN_NUMBER[Straight]},
-  {07.25, -1.0, GAIN_NUMBER[FastCurve]},
-  {08.5, +1.0, GAIN_NUMBER[Straight]},
-  {08.95, -1.0, GAIN_NUMBER[FastCurve]},
-  {09.6, +1.0, GAIN_NUMBER[Straight]},
-  {10.80, -1.0, GAIN_NUMBER[FastCurve]},
-  {11.0, +1.0, GAIN_NUMBER[Straight]},
-  {11.50, -1.0, GAIN_NUMBER[Curve]},
-  {11.9, +1.0, GAIN_NUMBER[Straight]},
-  {12.60, -1, GAIN_NUMBER[Curve]},
-  {13.2, +1.00, GAIN_NUMBER[FastCurve]},
+  {00.78, +1.5, GAIN_NUMBER[Straight]},       //01
+  {01.2, -2, GAIN_NUMBER[Curve]},       //02
+  {02.60, +1.0, GAIN_NUMBER[Straight]},       //03
+  {03.2, -1.0, GAIN_NUMBER[Curve]},       //04
+  {04.6, +1.0, GAIN_NUMBER[Straight]},        //05
+  {05.25, -1.0, GAIN_NUMBER[Curve]},        //06
+  {06.0, +1.0, GAIN_NUMBER[Straight]},        //07
+  {07.25, -1.0, GAIN_NUMBER[FastCurve]},        //08
+  {08.5, +1.0, GAIN_NUMBER[Straight]},        //09
+  {08.95, -1.0, GAIN_NUMBER[FastCurve]},        //10
+  {09.6, +1.0, GAIN_NUMBER[Straight]},        //11
+  {10.80, -1.0, GAIN_NUMBER[FastCurve]},        // 12
+  {11.0, +1.0, GAIN_NUMBER[Straight]},        //13
+  {11.50, -1.0, GAIN_NUMBER[Curve]},        //14
+  {11.9, +1.0, GAIN_NUMBER[Straight]},        //15
+  {12.60, -1, GAIN_NUMBER[Curve]},        //16
+  {13.2, +1.00, GAIN_NUMBER[FastCurve]},        //17
 
   {FINAL_TARGET_POSITION, +1.5, GAIN_NUMBER[Straight]}
   // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track

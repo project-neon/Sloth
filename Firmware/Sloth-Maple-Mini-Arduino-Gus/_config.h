@@ -18,7 +18,7 @@
 #define BT	Serial3
 #define PC	Serial
 #define PC_SPEED  115200
-#define LOG_INTERVAL  0.01 //
+#define LOG_INTERVAL  10 //
 
 //
 // Bluetooth Configs (Type here)
@@ -67,12 +67,15 @@
 #define STOP_BY_TIME true
 #define LAP_TIME 500 //in seconds
 #define STOP_BY_DISTANCE true
-#define FINAL_TARGET_POSITION   50  // in meters
+#define FINAL_TARGET_POSITION   13.10  // in meters
 // #define FINAL_TARGET_POSITION   1.0
 #define ACCELERATION_ENABLED true
 #define ACCELERATION_INTERVAL 0.01
 #define MAPPING_ENABLED false
 #define FIRST_MARK_POSITION 0.5
+#define OFFSET_ACELERATION 0.25
+#define OFFSET_DESACELERATION 0.25
+
 
 //
 //Marking Settings
@@ -116,7 +119,7 @@
 #define Straight  3
 #define Stop      4
 
-#define TRACK_EVENT_NAME HACKPULICA_NORMAL_NEW
+#define TRACK_EVENT_NAME TECH_CHALLENGE
 #define GAIN_NUMBER PD0
 
 #endif

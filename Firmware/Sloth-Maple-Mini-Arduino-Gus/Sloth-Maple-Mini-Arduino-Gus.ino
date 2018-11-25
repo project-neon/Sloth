@@ -155,10 +155,10 @@ void setup(){
 	// attachInterrupt(digitalPinToInterrupt(BTRX), btcallback,RISING);
   setupLeftEncoder();
   setupRightEncoder();
-  setupMarkSensors();
   // setupLineReader();
   setupPID(Normal);
   setupRobot();
+	setupMarkSensors();
 }
 
 
@@ -317,7 +317,7 @@ void setupLineReader() {
   LOG.println("Done.");
 	delay(100);
 	digitalWrite(PIN_LED, 0);
-	delay(1000);
+	delay(2500);
   //
   // for (int i = 0; i < NUM_SENSORS; i++)
   //   LOG.printf("Min: %4i \t", LineReader.calibratedMinimumOn[i]);
@@ -397,6 +397,9 @@ void manualTrackMapping(){
 		 LOG.print("C,");
 		 LOG.print(crossroad_counter);
 		 LOG.print(",");
+		 LOG.print(leftDistance);
+		 LOG.print(",");
+		 LOG.print(rightDistance);
 		 checkpoint_left_counter--;
 		 checkpoint_right_counter--;
 	 }
@@ -405,6 +408,9 @@ void manualTrackMapping(){
 		 LOG.print("L,");
 		 LOG.print(checkpoint_left_counter);
 		 LOG.print(",");
+		 LOG.print(leftDistance);
+		 LOG.print(",");
+		 LOG.print(rightDistance);
 		 last_checkpoint_left_counter = checkpoint_left_counter;
 	 }
 	 // Start/Finish marks
@@ -412,16 +418,19 @@ void manualTrackMapping(){
 		 LOG.print("R,");
 		 LOG.print(checkpoint_right_counter);
 		 LOG.print(",");
+		 LOG.print(leftDistance);
+		 LOG.print(",");
+		 LOG.print(rightDistance);
 		 last_checkpoint_right_counter = checkpoint_right_counter;
 	 }
 	 else {
-		 LOG.print("-,-,");
+		 // LOG.print("-,-,");
 	 }
 	 // Encoders positions
 
-	 LOG.print(leftDistance);
-	 LOG.print(",");
-	 LOG.print(rightDistance);
+	 // LOG.print(leftDistance);
+	 // LOG.print(",");
+	 // LOG.print(rightDistance);
 }
 
 void btcallback() {
@@ -498,7 +507,7 @@ void loop(){
 void followLine(){
 
   // Timers
-  startLogTimer = millis()/1000.0; // Debug the loop
+  startLogTimer = millis(); // Debug the loop
   startLapTimer = millis()/1000.0; // Time of a lap
   startAccTimer = millis()/1000.0; // Acceleration interval
   startCps_left_led_timer = millis()/1000.0; // Acceleration interval
@@ -633,7 +642,7 @@ void followLine(){
         }
       }
 
-      nowLogTimer = millis()/1000.0;
+      nowLogTimer = millis();
 
       if (nowLogTimer - startLogTimer > LOG_INTERVAL && LOG_ENABLED) {
 
