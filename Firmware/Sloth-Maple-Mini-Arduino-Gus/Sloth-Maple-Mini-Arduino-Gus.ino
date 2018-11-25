@@ -15,13 +15,28 @@
 // #include "QTR.h"
 byte rcvd=0;
 
+
+// float speedbase = 50;
+// float kpdir = 20.0;
+// float kidir = 0.0;
+// float kddir = 2.0;
+
+float speedbase = 50;
+float kpdir = 20.0;
+float kidir = 0.0;
+float kddir = 3.10;
+
+#define CONSTANTE 1000
+
+Setup Normal     = {speedbase, kpdir, kidir, kddir};
+
 Motor LeftMotor(PIN_M1_PWM, PIN_M1_IN1, PIN_M1_IN2);
 Motor RightMotor(PIN_M2_PWM, PIN_M2_IN1, PIN_M2_IN2);
 float leftmotorspeed = 0;
 float righmotorspeed = 0;
 float currentSpeed = 0;
 float targetSpeed = 0;
-float acceleration = 0;
+float acceleration = 5;
 bool MOTORS_ENABLE = true;
 
 QEI LeftEncoder(PIN_ENC1_A, PIN_ENC1_B, PULSES_PER_REV, WHEEL_RADIUS);
@@ -59,7 +74,7 @@ int last_checkpoint_right_counter = 0;
 int crossroad_counter = 0;
 
 bool robotstate = true;
-bool readyStatus = true;
+bool robotplay = false;
 
 //PID
 int directiongain = 0;
@@ -99,7 +114,7 @@ void checkpointSensorRightCallback() {
 void setupPID(Setup setup){
   // Setup PID and Speed
   targetSpeed = setup.speed;
-  directioncontrol.setTunings(setup.kp, setup.ki, setup.kd);
+  directioncontrol.setTunings(setup.kp/CONSTANTE, setup.ki/CONSTANTE, setup.kd/CONSTANTE);
   // If line position is 0, the robot is just over the line
   directioncontrol.setSetPoint(0);
 }
@@ -310,15 +325,15 @@ void testEncoder(bool AUTO_ENCODER){
 
 //Line Sensor
 void setupLineReader() {
-  delay(2000);
+  delay(1000);
   LOG.print("Calibrating sensors...");
   digitalWrite(PIN_LED, 1);
   for (int i = 0; i < 1000; i++)
     LineReader.calibrate(true);
   LOG.println("Done.");
-	delay(1000);
+	delay(100);
 	digitalWrite(PIN_LED, 0);
-	delay(2000);
+	delay(1000);
   //
   // for (int i = 0; i < NUM_SENSORS; i++)
   //   LOG.printf("Min: %4i \t", LineReader.calibratedMinimumOn[i]);
@@ -419,25 +434,50 @@ void manualTrackMapping(){
 		 LOG.print("-,-,");
 	 }
 	 // Encoders positions
-	 LOG.print(",");
+
 	 LOG.print(leftDistance);
 	 LOG.print(",");
 	 LOG.print(rightDistance);
 }
 
 void btcallback() {
-	while(BT.available()>0){
-		rcvd = BT.read();
+	rcvd = 0;
+	if(BT.available()>0){
+		rcvd = (char) BT.read();
 	}
-	BT.println("TEST BT - CALLBACK");
+	// BT.println("TEST BT - CALLBACK");
   switch (rcvd) {
-    case 'G':
+		case 'A':
+      kpdir += 0.5/3;
+      break;
+    case 'B':
+      kpdir -= 0.5/3;
+      break;
+    case 'C':
+      kidir += 0.05/3;
+      break;
+    case 'D':
+      kidir -= 0.05/3;
+      break;
+    case 'E':
+      kddir += 0.05/3;
+      break;
+    case 'F':
+      kddir -= 0.05/3;
+      break;
+    case 'u':
+      speedbase += 5.0/3;
+			acceleration = acceleration > 0 ? acceleration : -acceleration;
+      break;
+    case 'd':
+      speedbase -= 5.0/3;
+			acceleration = acceleration > 0 ? -acceleration : acceleration;
+      break;
+		case 'G':
       robotstate = true;
-      // robotstate = true;
-      LOG.println("Robot will Start in 2s");
+      robotplay = true;
       LeftEncoder.reset();
       RightEncoder.reset();
-      delay(2000);
       break;
     case 'S':
       robotstate = false;
@@ -450,6 +490,13 @@ void btcallback() {
       LOG.println("Motors state changed");
       break;
   }
+	Normal = {speedbase, kpdir, kidir, kddir};
+	BT.print("speed: "); BT.print(speedbase); BT.print("\t ");
+	BT.print("kp: "); BT.print(kpdir); BT.print("\t ");
+	BT.print("kd: "); BT.print(kddir); BT.print("\t ");
+	// BT.print("ki: "); BT.print(kidir); BT.print("\t ");
+	BT.println();
+	setupPID(Normal);
 }
 
 void loop(){
@@ -478,9 +525,14 @@ void followLine(){
 		if(BT.available()>0){
 			btcallback();
 		}
+		if (robotplay){
+			robotplay = false;
+			LOG.println("Robot will Start in 2s");
+			delay(2000);
+		}
     if (checkpoint_right_counter == 0) {
-      // LeftEncoder.reset();
-      // RightEncoder.reset();
+      LeftEncoder.reset();
+      RightEncoder.reset();
     }
 
     leftDistance = PULSES2DISTANCE(LeftEncoder.getPulses());
@@ -528,6 +580,9 @@ void followLine(){
       while (!robotstate) {
         digitalWrite(PIN_LED, !digitalRead(PIN_LED));
         delay(500);
+				if(BT.available()>0){
+					btcallback();
+				}
       }
     }
     else if (robotstate) { // Follow the Line
@@ -568,10 +623,12 @@ void followLine(){
           if (nowAccTimer - startAccTimer > ACCELERATION_INTERVAL) {
             // check if the robot accelerates or decelerates
             if ((acceleration > 0 && currentSpeed < targetSpeed) || (acceleration < 0 && currentSpeed > targetSpeed)) {
-              currentSpeed += acceleration * ACCELERATION_INTERVAL;
+              currentSpeed += acceleration; //* ACCELERATION_INTERVAL;
               currentSpeed = currentSpeed > targetSpeed ? targetSpeed : currentSpeed < 0 ? 0 : currentSpeed;
-              startAccTimer = nowAccTimer;
+							LOG.println(currentSpeed);
             }
+
+						startAccTimer = nowAccTimer;
           }
         } else {
           currentSpeed = targetSpeed;
@@ -605,7 +662,7 @@ void followLine(){
         // LOG.printf("%.4f,", currentPosition);
         // LOG.printf("%.4f", DIF(leftDistance, rightDistance));
 
-				// manualTrackMapping();
+				manualTrackMapping();
 				// testEncoder(false);
 				// testLineSensor();
 				// testMotor();

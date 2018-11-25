@@ -7,6 +7,18 @@
   This file contains the tracks that the robot has already done.
 */
 
+Mark HACKPULICA_RETAS[] = { // Distance in meters, Aceleration, Constants of gain (PID)
+  {2.5, +5.0, GAIN_NUMBER[Straight]},
+  {3.4, -2, GAIN_NUMBER[SlowCurve]},
+  {6.3, +5.0, GAIN_NUMBER[Straight]},
+  {7.0, -5.0, GAIN_NUMBER[SlowCurve]},
+  {10.05, +5.0, GAIN_NUMBER[Straight]},
+  {10.9, -5.0, GAIN_NUMBER[SlowCurve]},
+  {12.8, +5.0, GAIN_NUMBER[Straight]},
+  {FINAL_TARGET_POSITION, +1.5, GAIN_NUMBER[Straight]}
+  // {FINAL_TARGET_POSITION, -1.0, Stop} // 21 End Track
+};
+
 Mark SMILE_2018[] = { // Distance in meters, Aceleration, Constants of gain (PID)
   {00.78, +1.5, GAIN_NUMBER[Straight]},
   {01.2, -2, GAIN_NUMBER[Curve]},
