@@ -1,7 +1,7 @@
 #ifndef PID_H
 #define PID_H
 
-#include "arduino.h"
+#include "Arduino.h"
 
 class PID {
 public:

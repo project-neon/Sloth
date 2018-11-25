@@ -1,4 +1,4 @@
-#include <arduino.h>
+#include <Arduino.h>
 #ifndef Encoder_h
 #define Encoder_h
 
