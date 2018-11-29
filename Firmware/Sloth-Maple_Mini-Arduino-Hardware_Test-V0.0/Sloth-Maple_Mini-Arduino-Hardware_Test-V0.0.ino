@@ -121,53 +121,53 @@ void loop() {
   LOG.print(count2);
   LOG.print("\t");
   
-  switch (count){
-    case 0:
-      setPower(PIN_M1_PWM, 50);
-      setPower(PIN_M2_PWM, 50);
-      // Set motor to BACKWARD
-      digitalWrite(PIN_M1_IN1, LOW);
-      digitalWrite(PIN_M1_IN2, HIGH);
-      digitalWrite(PIN_M2_IN1, LOW);
-      digitalWrite(PIN_M2_IN2, HIGH);
-      count++;
-      break;
-      
-    case 1:
-      setPower(PIN_M1_PWM, 0);
-      setPower(PIN_M2_PWM, 0);
-      digitalWrite(PIN_M1_IN1, HIGH);
-      digitalWrite(PIN_M1_IN2, HIGH);
-      digitalWrite(PIN_M2_IN1, HIGH);
-      digitalWrite(PIN_M2_IN2, HIGH);
-      count++;
-      break;
-
-    case 2:
-      setPower(PIN_M1_PWM, 25);
-      setPower(PIN_M2_PWM, 25);
-      // Set motor to FORWARD
-      digitalWrite(PIN_M1_IN1, HIGH);
-      digitalWrite(PIN_M1_IN2, LOW);
-      digitalWrite(PIN_M2_IN1, HIGH);
-      digitalWrite(PIN_M2_IN2, LOW);
-      count++;
-      break;
-
-    case 3:
-      setPower(PIN_M1_PWM, 0);
-      setPower(PIN_M2_PWM, 0);
-      digitalWrite(PIN_M1_IN1, HIGH);
-      digitalWrite(PIN_M1_IN2, HIGH);
-      digitalWrite(PIN_M2_IN1, HIGH);
-      digitalWrite(PIN_M2_IN2, HIGH);
-      count=0;
-      break;
-  }
+//  switch (count){
+//    case 0:
+//      setPower(PIN_M1_PWM, 50);
+//      setPower(PIN_M2_PWM, 50);
+//      // Set motor to BACKWARD
+//      digitalWrite(PIN_M1_IN1, LOW);
+//      digitalWrite(PIN_M1_IN2, HIGH);
+//      digitalWrite(PIN_M2_IN1, LOW);
+//      digitalWrite(PIN_M2_IN2, HIGH);
+//      count++;
+//      break;
+//      
+//    case 1:
+//      setPower(PIN_M1_PWM, 0);
+//      setPower(PIN_M2_PWM, 0);
+//      digitalWrite(PIN_M1_IN1, HIGH);
+//      digitalWrite(PIN_M1_IN2, HIGH);
+//      digitalWrite(PIN_M2_IN1, HIGH);
+//      digitalWrite(PIN_M2_IN2, HIGH);
+//      count++;
+//      break;
+//
+//    case 2:
+//      setPower(PIN_M1_PWM, 25);
+//      setPower(PIN_M2_PWM, 25);
+//      // Set motor to FORWARD
+//      digitalWrite(PIN_M1_IN1, HIGH);
+//      digitalWrite(PIN_M1_IN2, LOW);
+//      digitalWrite(PIN_M2_IN1, HIGH);
+//      digitalWrite(PIN_M2_IN2, LOW);
+//      count++;
+//      break;
+//
+//    case 3:
+//      setPower(PIN_M1_PWM, 0);
+//      setPower(PIN_M2_PWM, 0);
+//      digitalWrite(PIN_M1_IN1, HIGH);
+//      digitalWrite(PIN_M1_IN2, HIGH);
+//      digitalWrite(PIN_M2_IN1, HIGH);
+//      digitalWrite(PIN_M2_IN2, HIGH);
+//      count=0;
+//      break;
+//  }
 
   LOG.print("\n");
   // HEARTBEAT LED
   digitalWrite(PIN_LED, !digitalRead(PIN_LED));
-  delay(2500);
+  delay(500);
 
 }

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "config.h"
 #include "TB6612FNG.h"
-#include "QEI.h"
+//#include "QEI.h"
 
 
 // Encoders

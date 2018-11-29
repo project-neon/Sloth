@@ -262,11 +262,11 @@ void QTRSensors::readCalibrated(unsigned int *sensor_values, unsigned char readM
         signed int x = 0;
         if(denominator != 0)
             x = (((signed long)sensor_values[i]) - calmin)
-                * FIX_MAX_ANALOG_READ / denominator;
+                * 1000 / denominator;
         if(x < 0)
             x = 0;
-        else if(x > FIX_MAX_ANALOG_READ)
-            x = FIX_MAX_ANALOG_READ;
+        else if(x > 1000)
+            x = 1000;
         sensor_values[i] = x;
     }
 
@@ -308,7 +308,7 @@ int QTRSensors::readLine(unsigned int *sensor_values,
     for(i=0;i<_numSensors;i++) {
         int value = sensor_values[i];
         if(white_line)
-            value = FIX_MAX_ANALOG_READ-value;
+            value = 1000-value;
 
         // keep track of whether we see the line at all
         if(value > 200) {
@@ -317,7 +317,7 @@ int QTRSensors::readLine(unsigned int *sensor_values,
 
         // only average in values that are above a noise threshold
         if(value > 50) {
-            avg += (long)(value) * (i * FIX_MAX_ANALOG_READ);
+            avg += (long)(value) * (i * 1000);
             sum += value;
         }
     }
@@ -325,12 +325,12 @@ int QTRSensors::readLine(unsigned int *sensor_values,
     if(!on_line)
     {
         // If it last read to the left of center, return 0.
-        if(_lastValue < (_numSensors-1)*FIX_MAX_ANALOG_READ/2)
+        if(_lastValue < (_numSensors-1)*1000/2)
             return 0;
 
         // If it last read to the right of center, return the max.
         else
-            return (_numSensors-1)*FIX_MAX_ANALOG_READ;
+            return (_numSensors-1)*1000;
 
     }
 
@@ -679,7 +679,7 @@ void QTRSensorsAnalog::init(unsigned char* analogPins,
     QTRSensors::init(analogPins, numSensors, emitterPin);
 
     _numSamplesPerSensor = numSamplesPerSensor;
-    _maxValue = MAX_ANALOG_READ; // this is the maximum returned by the A/D conversion
+    _maxValue = 1023; // this is the maximum returned by the A/D conversion
 }
 
 
@@ -710,7 +710,7 @@ void QTRSensorsAnalog::readPrivate(unsigned int *sensor_values, unsigned char st
     {
         for (i = start; i < _numSensors; i += step)
         {
-            sensor_values[i] += analogRead(_pins[i]);   // add the conversion result
+            sensor_values[i] += analogRead(_pins[i])>>2;   // add the conversion result
         }
     }
 

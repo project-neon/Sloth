@@ -3,6 +3,9 @@
 
 #include <Arduino.h>
 
+#define FIX_MAX_ANALOG_READ 1000 //old = 1000
+#define MAX_ANALOG_READ 1023 //old = 1023
+
 //
 // Project
 //
@@ -48,7 +51,7 @@
 #define PIN_LR_S6 6   // AIN5
 #define PIN_LR_S7 5   // AIN6
 #define PIN_LR_S8 4   // AIN7
-
+#define STRAIGHT_FIX  100
 
 //
 // Line Reader Settings
@@ -67,15 +70,16 @@
 #define STOP_BY_TIME true
 #define LAP_TIME 500 //in seconds
 #define STOP_BY_DISTANCE true
-#define FINAL_TARGET_POSITION   13.10  // in meters
+#define FINAL_TARGET_POSITION   13.50  // in meters
 // #define FINAL_TARGET_POSITION   1.0
 #define ACCELERATION_ENABLED true
 #define ACCELERATION_INTERVAL 0.01
-#define MAPPING_ENABLED false
+#define MAPPING_ENABLED true
 #define FIRST_MARK_POSITION 0.5
-#define OFFSET_ACELERATION 0.25
-#define OFFSET_DESACELERATION 0.25
-
+#define OFFSET_ACELERATION 0.30
+#define OFFSET_DESACELERATION 0.0
+#define ACCELERATION_UP   5.00
+#define ACCELERATION_DOWN -10.00
 
 //
 //Marking Settings

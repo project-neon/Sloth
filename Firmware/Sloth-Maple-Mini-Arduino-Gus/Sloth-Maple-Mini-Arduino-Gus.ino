@@ -32,14 +32,22 @@ bool firstMarkDone = false;
 
 
 unsigned char pinsLineReader[NUM_SENSORS] = {
-	PIN_LR_S1,
-	PIN_LR_S2,
-	PIN_LR_S3,
-	PIN_LR_S4,
-	PIN_LR_S5,
-	PIN_LR_S6,
+	// PIN_LR_S1,
+	// PIN_LR_S2,
+	// PIN_LR_S3,
+	// PIN_LR_S4,
+	// PIN_LR_S5,
+	// PIN_LR_S6,
+	// PIN_LR_S7,
+	// PIN_LR_S8
+	PIN_LR_S8,
 	PIN_LR_S7,
-	PIN_LR_S8
+	PIN_LR_S6,
+	PIN_LR_S5,
+	PIN_LR_S4,
+	PIN_LR_S3,
+	PIN_LR_S2,
+	PIN_LR_S1
   };
 
 unsigned int sensorValues[NUM_SENSORS];
@@ -332,7 +340,7 @@ void setupLineReader() {
 
 void testLineSensor(){
 // Certifies correct operation of line sensors
-  LineReader.read(sensorValues, QTR_EMITTERS_ON);
+  LineReader.readCalibrated(sensorValues, QTR_EMITTERS_ON);
    for (int i = 0; i < NUM_SENSORS; i++) {
     LOG.print(sensorValues[i]);
     LOG.print("\t");
@@ -399,7 +407,7 @@ void manualTrackMapping(){
 		 LOG.print(",");
 		 LOG.print(leftDistance);
 		 LOG.print(",");
-		 LOG.print(rightDistance);
+		 LOG.println(rightDistance);
 		 checkpoint_left_counter--;
 		 checkpoint_right_counter--;
 	 }
@@ -410,7 +418,7 @@ void manualTrackMapping(){
 		 LOG.print(",");
 		 LOG.print(leftDistance);
 		 LOG.print(",");
-		 LOG.print(rightDistance);
+		 LOG.println(rightDistance);
 		 last_checkpoint_left_counter = checkpoint_left_counter;
 	 }
 	 // Start/Finish marks
@@ -420,7 +428,7 @@ void manualTrackMapping(){
 		 LOG.print(",");
 		 LOG.print(leftDistance);
 		 LOG.print(",");
-		 LOG.print(rightDistance);
+		 LOG.println(rightDistance);
 		 last_checkpoint_right_counter = checkpoint_right_counter;
 	 }
 	 else {
@@ -484,9 +492,9 @@ void btcallback() {
       break;
   }
 	Normal = {speedbase, kpdir, kidir, kddir};
-	BT.print("speed: "); BT.print(speedbase); BT.print("\t ");
-	BT.print("kp: "); BT.print(kpdir); BT.print("\t ");
-	BT.print("kd: "); BT.print(kddir); BT.print("\t ");
+	// BT.print("speed: "); BT.print(speedbase); BT.print("\t ");
+	// BT.print("kp: "); BT.print(kpdir); BT.print("\t ");
+	// BT.print("kd: "); BT.print(kddir); BT.print("\t ");
 	// BT.print("ki: "); BT.print(kidir); BT.print("\t ");
 	BT.println();
 	setupPID(Normal);
@@ -530,7 +538,8 @@ void followLine(){
 
     leftDistance = PULSES2DISTANCE(LeftEncoder.getPulses());
     rightDistance = PULSES2DISTANCE(RightEncoder.getPulses());
-    currentPosition = AVG(leftDistance, rightDistance) + POSITION_FIX; //get average
+    // currentPosition = AVG(leftDistance, rightDistance) + POSITION_FIX; //get average
+		currentPosition = rightDistance + POSITION_FIX; //get average
 
     // Check if the robot complete the track
     if (currentPosition >= FINAL_TARGET_POSITION && STOP_BY_DISTANCE) {
@@ -595,17 +604,27 @@ void followLine(){
 
         // Check if changed mark
         if (currentPosition >= TargetMark.position && MAPPING_ENABLED) {
-          currentMark++;
+					LOG.print(currentPosition);
+					LOG.print(": ");
+					LOG.print(currentMark);
+					LOG.print("--> ");
+					currentMark++;
+					LOG.print(currentMark);
+					LOG.print(" ");
           // Get current Target Mark
           TargetMark = TRACK_EVENT_NAME[currentMark];
           acceleration = TargetMark.acceleration;
           // Update Robot Setup
+					LOG.println(TargetMark.setup.speed);
           setupPID(TargetMark.setup);
         }
 
         // Position of the line: (left)-2500 to 2500(right)
-        LineReader.read(sensorValues, QTR_EMITTERS_ON);
+        LineReader.readCalibrated(sensorValues, QTR_EMITTERS_ON);
         linePosition = LineReader.readLine(sensorValues, QTR_EMITTERS_OFF, WHITE_LINE) - 2500.0;
+
+				// Disconsider the next of zero values
+				linePosition = linePosition > -STRAIGHT_FIX ? (linePosition < STRAIGHT_FIX ? 0 : linePosition) : linePosition;
 
         directioncontrol.setProcessValue(linePosition);
         directiongain = directioncontrol.compute();
@@ -616,9 +635,9 @@ void followLine(){
           if (nowAccTimer - startAccTimer > ACCELERATION_INTERVAL) {
             // check if the robot accelerates or decelerates
             if ((acceleration > 0 && currentSpeed < targetSpeed) || (acceleration < 0 && currentSpeed > targetSpeed)) {
-              currentSpeed += acceleration; //* ACCELERATION_INTERVAL;
+              currentSpeed += acceleration;// * ACCELERATION_INTERVAL;
               currentSpeed = currentSpeed > targetSpeed ? targetSpeed : currentSpeed < 0 ? 0 : currentSpeed;
-							LOG.println(currentSpeed);
+							// LOG.println(currentSpeed);
             }
 
 						startAccTimer = nowAccTimer;
@@ -674,7 +693,7 @@ void followLine(){
         // LOG.print(nowCps_right_led_timer - startCps_right_led_timer);
 
 
-        LOG.println();
+        // LOG.println();
 
 				// BT.println("TEST BT - MAIN");
 
