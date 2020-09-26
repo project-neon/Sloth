@@ -60,5 +60,5 @@ Only a concept.
 
 
 # Contributors
-* [Gustavo Silva de Paula](https://github.com/Gustavo-dPaula)
-* [Marcelo Farias](https://github.com/MarceloFariaz)
+* [Gustavo Silva de Paula](https://github.com/gustavosdepaula)
+* [Marcelo Farias](https://github.com/marcelojrfarias)
